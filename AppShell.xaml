@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SafetyAppMobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:SafetyAppMobile"
+    Title="SafetyAppMobile"
+    FlyoutBehavior="Flyout"
+    FlyoutBackgroundColor="#F4F4FA">
+    <!-- 👆 Fondo lavanda claro para todo el menú lateral -->
+
+    <!-- ========================================== -->
+    <!-- 1. ENCABEZADO DEL MENÚ (Header Morado)     -->
+    <!-- ========================================== -->
+    <Shell.FlyoutHeaderTemplate>
+        <DataTemplate>
+            <Grid BackgroundColor="#37246B" HeightRequest="180" Padding="25,0,25,25">
+                <VerticalStackLayout VerticalOptions="End" Spacing="2">
+                    <Label Text="Safety App" TextColor="White" FontSize="22" FontFamily="PoppinsBold" FontAttributes="Bold" />
+                    <Label Text="Tu red de protección" TextColor="#B39DDB" FontSize="13" FontFamily="PoppinsRegular" />
+                </VerticalStackLayout>
+            </Grid>
+        </DataTemplate>
+    </Shell.FlyoutHeaderTemplate>
+
+    <!-- ========================================== -->
+    <!-- 2. DISEÑO DE CADA OPCIÓN DEL MENÚ          -->
+    <!-- ========================================== -->
+    <Shell.ItemTemplate>
+        <DataTemplate>
+            <Grid Padding="25,18" ColumnSpacing="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Column="0" Text="🔸" FontSize="14" VerticalOptions="Center" TextColor="#7663B5" />
+                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#37246B" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" />
+            </Grid>
+        </DataTemplate>
+    </Shell.ItemTemplate>
+
+    <!-- ========================================== -->
+    <!-- ZONA PÚBLICA (Sin Menú)                    -->
+    <!-- ========================================== -->
+    <ShellContent
+        Title="Login"
+        ContentTemplate="{DataTemplate local:LoginPage}"
+        Route="login" 
+        Shell.FlyoutBehavior="Disabled" 
+        Shell.FlyoutItemIsVisible="False" />
+
+    <ShellContent
+        Title="Onboarding"
+        ContentTemplate="{DataTemplate local:OnboardingPage}"
+        Route="onboarding" 
+        Shell.FlyoutBehavior="Disabled" 
+        Shell.FlyoutItemIsVisible="False" />
+
+    <!-- ========================================== -->
+    <!-- ZONA PRIVADA (Menú de Hamburguesa)         -->
+    <!-- ========================================== -->
+    <FlyoutItem Title="Central de Alertas">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:DashboardPage}"
+            Route="dashboard" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Mi Red de Seguridad">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:ContactPage}"
+            Route="contacts" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Mi Perfil">
+        <ShellContent
+            ContentTemplate="{DataTemplate local:ProfilePage}"
+            Route="profile" />
+    </FlyoutItem>
+
+</Shell>

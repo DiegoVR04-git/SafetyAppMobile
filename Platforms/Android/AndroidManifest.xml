@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+	<application android:allowBackup="true" android:icon="@mipmap/pulso_violeta_icon" android:roundIcon="@mipmap/pulso_violeta_icon" android:supportsRtl="true" android:usesCleartextTraffic="true">
+		<!-- 🗺️ Clave de API de Google Maps -->
+		<meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyD-QEj1iym3p_HFwWNVUCAPtBCB74IBles" />
+	</application>
+
+	<!-- Permisos de Vibración: Para que el celular vibre cuando se active el botón de pánico -->
+	<uses-permission android:name="android.permission.VIBRATE" />
+	<!-- Permisos de Red -->
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<!-- Permisos de GPS Normales -->
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<!-- 🚀 HU-21 / HU-24: NUEVOS PERMISOS DE PERSISTENCIA Y SUPERVIVENCIA -->
+	<!-- 1. Permite acceder al GPS aunque la app esté minimizada o bloqueada -->
+	<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+	<!-- 2. Permite crear el "Servicio Inmortal" en primer plano -->
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+	<!-- 3. Requisito de Google (Android 14+): Especificar que este servicio usa GPS -->
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+	<!-- Permiso extra para nuestro escuchador de botones en segundo plano -->
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+	<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+	<!-- 4. "Wake Lock": Evita que el procesador del celular entre en sueño profundo -->
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<!-- 5. Requisito (Android 13+): Permiso para mostrar la notificación de rastreo -->
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<!-- 🛡️ ESCUDO ANTIMISILES (NUEVO): Permite saltar restricciones del sistema para lanzar el SOS desde el fondo -->
+	<uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+</manifest>

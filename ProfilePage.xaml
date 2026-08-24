@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafetyAppMobile.ProfilePage"
+             Title="Mis Datos"
+             BackgroundColor="#F4F4FA">
+    <!-- Fondo lavanda claro -->
+
+    <!-- Dejamos solo el ScrollView. La barra superior blanca la pone MAUI automáticamente -->
+    <ScrollView>
+        <VerticalStackLayout Padding="20,20,20,30" Spacing="0">
+
+            <!-- TÍTULO ESTILO "Red de Emergencia" -->
+            <Label Text="Mi" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#37246B" LineHeight="1.0"/>
+            <Label Text="Perfil" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#37246B" LineHeight="1.0" Margin="0,0,0,10"/>
+
+            <!-- SUBTÍTULO -->
+            <Label Text="Actualiza tus datos y el correo donde recibirás el reporte de evidencia S.O.S." 
+                   TextColor="#7663B5" FontSize="14" Margin="0,0,0,25" LineBreakMode="WordWrap"/>
+
+            <!-- TARJETA 1: Nombre -->
+            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,15">
+                <Grid ColumnDefinitions="Auto, *">
+                    <!-- Círculo del Ícono -->
+                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
+                        <Label Text="👤" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
+                        <Label Text="Nombre Completo" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
+                        <Entry x:Name="NameEntry" Placeholder="Tu nombre" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent" Margin="0,-5,0,0"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- TARJETA 2: Teléfono -->
+            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,15">
+                <Grid ColumnDefinitions="Auto, *">
+                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
+                        <Label Text="📱" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
+                        <Label Text="Teléfono" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
+
+                        <!-- GRID INTERNO: Lada + Número -->
+                        <Grid ColumnDefinitions="Auto, *" Margin="0,-5,0,0" ColumnSpacing="5">
+                            <Picker x:Name="CountryCodePicker" Grid.Column="0" TextColor="#7663B5" BackgroundColor="Transparent" FontSize="14" SelectedIndex="0">
+                                <Picker.Items>
+                                    <x:String>+52</x:String>
+                                    <x:String>+1</x:String>
+                                </Picker.Items>
+                            </Picker>
+                            <Entry x:Name="PhoneEntry" Grid.Column="1" Keyboard="Telephone" Placeholder="A 10 dígitos" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent"/>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- TARJETA 3: Correo -->
+            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,25">
+                <Grid ColumnDefinitions="Auto, *">
+                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
+                        <Label Text="📧" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
+                        <Label Text="Correo S.O.S" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
+                        <Entry x:Name="EmailEntry" Keyboard="Email" Placeholder="ejemplo@correo.com" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent" Margin="0,-5,0,0"/>
+                    </VerticalStackLayout>
+                </Grid>
+            </Frame>
+
+            <!-- BOTÓN GUARDAR -->
+            <Button x:Name="SaveBtn" Text="Guardar Cambios" BackgroundColor="#422979" TextColor="White" 
+                    CornerRadius="8" HeightRequest="50" FontAttributes="Bold" FontSize="16"
+                    Clicked="OnSaveClicked"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

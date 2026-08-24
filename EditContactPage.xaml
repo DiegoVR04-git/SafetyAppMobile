@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafetyAppMobile.EditContactPage"
+             Title="Editar Contacto"
+             BackgroundColor="{StaticResource PulsoFondo}">
+    <!-- 🟣 Fondo oficial -->
+
+    <!-- GRID PRINCIPAL: Envuelve el contenido y la alerta de eliminación -->
+    <Grid>
+
+        <!-- ==============================  CONTENIDO ORIGINAL  ============================== -->
+        <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Start">
+
+            <!-- Título -->
+            <Label Text="Modificar Datos" 
+                   FontSize="24" 
+                   FontFamily="PoppinsBold"
+                   FontAttributes="Bold" 
+                   TextColor="{StaticResource PulsoMoradoProfundo}"
+                   HorizontalOptions="Center" 
+                   Margin="0,0,0,10"/>
+
+            <!-- 🃏 Tarjeta Blanca para el Formulario -->
+            <Frame BackgroundColor="White" CornerRadius="15" Padding="20" HasShadow="True">
+                <VerticalStackLayout Spacing="15">
+
+                    <Label Text="Nombre del Contacto:" TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="12"/>
+                    <Entry x:Name="NameEntry" 
+                           TextColor="{StaticResource PulsoMoradoProfundo}"
+                           FontFamily="PoppinsRegular"
+                           BackgroundColor="Transparent"/>
+                    <!-- Absorbe el blanco de la tarjeta -->
+
+                    <Grid ColumnDefinitions="85, *" ColumnSpacing="10" Margin="0,0,0,15">
+
+                        <!-- Selector de Código de País -->
+                        <Picker x:Name="CountryCodePicker" 
+                                Grid.Column="0" 
+                                Title="País" 
+                                TextColor="{StaticResource PulsoMoradoProfundo}"
+                                TitleColor="{StaticResource PulsoMoradoMedio}"
+                                FontFamily="PoppinsRegular"
+                                BackgroundColor="Transparent"
+                                SelectedIndex="0">
+
+                            <Picker.ItemsSource>
+                                <x:Array Type="{x:Type x:String}">
+                                    <x:String>+52</x:String>
+                                    <x:String>+1</x:String>
+                                </x:Array>
+                            </Picker.ItemsSource>
+                        </Picker>
+
+                        <!-- Entrada de Teléfono -->
+                        <Entry x:Name="PhoneEntry"
+                               Grid.Column="1" 
+                               Placeholder="Teléfono (10 dígitos)" 
+                               MaxLength="10" 
+                               Keyboard="Telephone"
+                               TextColor="{StaticResource PulsoMoradoProfundo}" 
+                               PlaceholderColor="{StaticResource PulsoMoradoMedio}" 
+                               FontFamily="PoppinsRegular"
+                               BackgroundColor="Transparent"/>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Botón de Guardar -->
+            <Button x:Name="SaveBtn"
+                    Text="Guardar Cambios" 
+                    Clicked="OnSaveClicked"
+                    BackgroundColor="{StaticResource PulsoMoradoProfundo}" 
+                    TextColor="{StaticResource PulsoFondo}" 
+                    FontSize="16"
+                    FontFamily="PoppinsBold"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    Margin="0,10,0,0"/>
+
+            <!-- Label de Estado -->
+            <Label x:Name="StatusLabel"
+                   Text=""
+                   TextColor="{StaticResource PulsoAlertaRoja}"
+                   HorizontalOptions="Center"
+                   FontFamily="PoppinsBold"
+                   FontAttributes="Bold"/>
+
+            <!-- Botón Cancelar -->
+            <Button Text="Cancelar" 
+                    Clicked="OnCancelClicked"
+                    BackgroundColor="Transparent" 
+                    TextColor="{StaticResource PulsoMoradoMedio}" 
+                    FontFamily="PoppinsBold"
+                    FontAttributes="Bold"
+                    Margin="0,10,0,0"/>
+
+            <!-- Botón Eliminar Contacto (Llama a la alerta) -->
+            <Button x:Name="DeleteBtn"
+                    Text="🗑️ Eliminar Contacto" 
+                    Clicked="OnDeleteClicked"
+                    BackgroundColor="Transparent" 
+                    TextColor="{StaticResource PulsoAlertaRoja}" 
+                    FontSize="16"
+                    FontFamily="PoppinsBold"
+                    FontAttributes="Bold"
+                    BorderColor="{StaticResource PulsoAlertaRoja}"
+                    BorderWidth="1"
+                    CornerRadius="10"
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+
+        </VerticalStackLayout>
+
+        <!-- ==============================  🔴 OVERLAY DE ALERTA DE ELIMINACIÓN  ============================== -->
+        <Grid x:Name="CustomDeleteOverlay" 
+              BackgroundColor="#99000000" 
+              IsVisible="False"
+              Opacity="0"
+              ZIndex="100">
+
+            <Border BackgroundColor="White"
+                    Stroke="{StaticResource PulsoAlertaRoja}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 25"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="320"
+                    Padding="25">
+
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="⚠️" FontSize="40" HorizontalOptions="Center" />
+                    <Label Text="Advertencia" 
+                           TextColor="{StaticResource PulsoAlertaRoja}" 
+                           FontFamily="PoppinsBold" 
+                           FontSize="20" 
+                           HorizontalOptions="Center" />
+
+                    <Label Text="¿Estás seguro de que quieres eliminar a este contacto de tu red de emergencia? Esta acción no se puede deshacer." 
+                           TextColor="#7663B5" 
+                           FontFamily="PoppinsRegular"
+                           FontSize="14" 
+                           HorizontalTextAlignment="Center" />
+
+                    <VerticalStackLayout Spacing="10" Margin="0,15,0,0">
+                        <!-- Este botón ahora hace el trabajo real de borrar -->
+                        <Button Text="Sí, Eliminar" 
+                                BackgroundColor="{StaticResource PulsoAlertaRoja}" 
+                                TextColor="White" 
+                                CornerRadius="12"
+                                FontFamily="PoppinsBold"
+                                Clicked="OnConfirmDeleteClicked" />
+
+                        <Button Text="Cancelar" 
+                                BackgroundColor="Transparent" 
+                                TextColor="#7663B5"
+                                FontFamily="PoppinsRegular"
+                                Clicked="OnCancelDeleteAlertClicked" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafetyAppMobile.AddContactPage"
+             Title="Nuevo Protector"
+             BackgroundColor="{StaticResource PulsoFondo}">
+    <!-- 🟣 Fondo oficial de Pulso Violeta -->
+
+    <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Start">
+
+        <!-- Título -->
+        <Label Text="Agregar Contacto" 
+               FontSize="24" 
+               FontFamily="PoppinsBold"
+               FontAttributes="Bold" 
+               TextColor="{StaticResource PulsoMoradoProfundo}"
+               HorizontalOptions="Center" 
+               Margin="0,0,0,10"/>
+
+        <!-- 🃏 Tarjeta Blanca para el Formulario -->
+        <Frame BackgroundColor="White" CornerRadius="15" Padding="20" HasShadow="True">
+            <VerticalStackLayout Spacing="15">
+
+                <!-- Entrada de Nombre -->
+                <Entry x:Name="NameEntry" 
+                       Placeholder="Nombre (Ej. Mamá)"
+                       PlaceholderColor="{StaticResource PulsoMoradoMedio}"
+                       TextColor="{StaticResource PulsoMoradoProfundo}"
+                       FontFamily="PoppinsRegular"
+                       BackgroundColor="Transparent"/>
+                <!-- Fondo transparente para que tome el blanco de la tarjeta -->
+
+                <Grid ColumnDefinitions="85, *" ColumnSpacing="10" Margin="0,0,0,15">
+
+                    <!-- Selector de Código de País -->
+                    <Picker x:Name="CountryCodePicker" 
+                            Grid.Column="0" 
+                            Title="País" 
+                            TextColor="{StaticResource PulsoMoradoProfundo}"
+                            TitleColor="{StaticResource PulsoMoradoMedio}"
+                            FontFamily="PoppinsRegular"
+                            BackgroundColor="Transparent"
+                            SelectedIndex="0">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>+52</x:String>
+                                <x:String>+1</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+
+                    <!-- Entrada de Teléfono -->
+                    <Entry x:Name="PhoneEntry"
+                           Grid.Column="1" 
+                           Placeholder="Teléfono (10 dígitos)" 
+                           MaxLength="10" 
+                           Keyboard="Telephone"
+                           TextColor="{StaticResource PulsoMoradoProfundo}" 
+                           PlaceholderColor="{StaticResource PulsoMoradoMedio}" 
+                           FontFamily="PoppinsRegular"
+                           BackgroundColor="Transparent"/>
+                </Grid>
+
+            </VerticalStackLayout>
+        </Frame>
+
+        <!-- Botón de Guardar -->
+        <Button x:Name="SaveBtn"
+                Text="Guardar Protector" 
+                Clicked="OnSaveClicked"
+                BackgroundColor="{StaticResource PulsoMoradoProfundo}" 
+                TextColor="{StaticResource PulsoFondo}" 
+                FontSize="16"
+                FontFamily="PoppinsBold"
+                FontAttributes="Bold"
+                CornerRadius="10"
+                HeightRequest="50"
+                Margin="0,10,0,0"/>
+
+        <!-- Label de Estado (Para mensajes de error) -->
+        <Label x:Name="StatusLabel"
+               Text=""
+               TextColor="{StaticResource PulsoAlertaRoja}"
+               HorizontalOptions="Center"
+               FontFamily="PoppinsBold"
+               FontAttributes="Bold"/>
+
+        <!-- Botón Cancelar -->
+        <Button Text="Cancelar" 
+                Clicked="OnCancelClicked"
+                BackgroundColor="Transparent" 
+                TextColor="{StaticResource PulsoMoradoMedio}"
+                FontFamily="PoppinsBold"
+                FontAttributes="Bold"
+                Margin="0,10,0,0"/>
+
+    </VerticalStackLayout>
+</ContentPage>

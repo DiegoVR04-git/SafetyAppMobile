@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:SafetyAppMobile.Converters"
+             x:Class="SafetyAppMobile.OnboardingPage"
+             BackgroundColor="{StaticResource PulsoFondo}"
+             Title="Bienvenido a Safety App">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:IsLastSlideConverter x:Key="IsLastSlideConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="*, Auto, Auto" Padding="0">
+
+        <!-- Carrusel de Onboarding -->
+        <Grid Grid.Row="0">
+            <CarouselView x:Name="OnboardingCarousel"
+                          IndicatorView="OnboardingIndicator"
+                          VerticalOptions="Fill"
+                          HorizontalOptions="Fill"
+                          CurrentItemChanged="OnCarouselCurrentItemChanged">
+                <CarouselView.ItemTemplate>
+                    <DataTemplate>
+
+                        <!-- 👇 AQUÍ ESTÁ LA MAGIA: El ScrollView envuelve el contenido 👇 -->
+                        <ScrollView VerticalOptions="Fill" VerticalScrollBarVisibility="Never">
+                            <VerticalStackLayout Padding="30" Spacing="20" VerticalOptions="Center">
+
+                                <!-- Ícono/Imagen -->
+                                <Label Text="{Binding Image}"
+                                       FontSize="72"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center" />
+
+                                <!-- Título -->
+                                <Label Text="{Binding Title}"
+                                       FontSize="28"
+                                       FontFamily="PoppinsBold"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource PulsoMoradoProfundo}"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       LineBreakMode="WordWrap" />
+
+                                <!-- Descripción -->
+                                <Label Text="{Binding Description}"
+                                       FontSize="16"
+                                       FontFamily="PoppinsRegular"
+                                       TextColor="{StaticResource PulsoMoradoMedio}"
+                                       HorizontalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       LineBreakMode="WordWrap"
+                                       Margin="0,10,0,0" />
+
+                                <!-- Email Input (Solo en el último slide) -->
+                                <VerticalStackLayout Spacing="10" Margin="0,20,0,0" 
+                                                     IsVisible="{Binding Title, Converter={StaticResource IsLastSlideConverter}}">
+
+                                    <Label Text="¿A qué correo enviamos tu record de alertas?"
+                                           FontSize="14"
+                                           FontFamily="PoppinsBold"
+                                           TextColor="{StaticResource PulsoMoradoProfundo}"
+                                           HorizontalOptions="Center"
+                                           HorizontalTextAlignment="Center" />
+
+                                    <Entry Text="{Binding Email}"
+                                           Placeholder="ejemplo@correo.com"
+                                           Keyboard="Email"
+                                           FontFamily="PoppinsRegular"
+                                           FontSize="14"
+                                           TextColor="{StaticResource PulsoMoradoProfundo}"
+                                           PlaceholderColor="{StaticResource PulsoMoradoMedio}"
+                                           BackgroundColor="#F5F5F5"
+                                           HorizontalOptions="FillAndExpand" />
+
+                                </VerticalStackLayout>
+
+                            </VerticalStackLayout>
+                        </ScrollView>
+                        <!-- 👆 FIN DEL SCROLLVIEW 👆 -->
+
+                    </DataTemplate>
+                </CarouselView.ItemTemplate>
+            </CarouselView>
+
+            <!-- Indicadores de paginación (puntitos) -->
+            <IndicatorView x:Name="OnboardingIndicator"
+                           IndicatorColor="{StaticResource PulsoMoradoMedio}"
+                           SelectedIndicatorColor="{StaticResource PulsoMoradoProfundo}"
+                           VerticalOptions="End"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,20" />
+        </Grid>
+
+        <!-- Espaciador -->
+        <BoxView Grid.Row="1" HeightRequest="20" BackgroundColor="Transparent" />
+
+        <!-- Botón de Continuar/Comenzar SIEMPRE FIJO ABAJO -->
+        <Button Grid.Row="2"
+                x:Name="NextButton"
+                Text="Continuar"
+                Clicked="OnNextButtonClicked"
+                BackgroundColor="{StaticResource PulsoMoradoProfundo}"
+                TextColor="{StaticResource PulsoFondo}"
+                FontSize="18"
+                FontFamily="PoppinsBold"
+                FontAttributes="Bold"
+                CornerRadius="12"
+                HeightRequest="50"
+                Margin="30,0,30,30"
+                Padding="20,0" />
+
+    </Grid>
+</ContentPage>
