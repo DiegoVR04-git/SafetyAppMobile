@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SafetyAppMobile.ProfilePage"
              Title="Mis Datos"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="#F4F4FA">
     <!-- Fondo lavanda claro -->
 

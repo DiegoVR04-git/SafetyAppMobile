@@ -5,6 +5,7 @@
              xmlns:skia="clr-namespace:SkiaSharp.Extended.UI.Controls;assembly=SkiaSharp.Extended.UI"
              x:Class="SafetyAppMobile.DashboardPage"
              Title="Central de Alertas"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource PulsoFondo}">
 
     <!-- Esto pone el botón de Salir nativamente en la esquina superior derecha de la barra blanca -->

@@ -4,78 +4,66 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:SafetyAppMobile"
-    Title="SafetyAppMobile"
-    FlyoutBehavior="Flyout"
-    FlyoutBackgroundColor="#F4F4FA">
-    <!-- 👆 Fondo lavanda claro para todo el menú lateral -->
+    Title="Pulso Violeta"
+    Shell.NavBarIsVisible="False"
+    FlyoutBehavior="Disabled">
+    <!-- 👆 FlyoutBehavior="Disabled" apaga completamente el menú de hamburguesa -->
 
     <!-- ========================================== -->
-    <!-- 1. ENCABEZADO DEL MENÚ (Header Morado)     -->
+    <!-- ESTILOS DE LA BARRA INFERIOR               -->
     <!-- ========================================== -->
-    <Shell.FlyoutHeaderTemplate>
-        <DataTemplate>
-            <Grid BackgroundColor="#37246B" HeightRequest="180" Padding="25,0,25,25">
-                <VerticalStackLayout VerticalOptions="End" Spacing="2">
-                    <Label Text="Safety App" TextColor="White" FontSize="22" FontFamily="PoppinsBold" FontAttributes="Bold" />
-                    <Label Text="Tu red de protección" TextColor="#B39DDB" FontSize="13" FontFamily="PoppinsRegular" />
-                </VerticalStackLayout>
-            </Grid>
-        </DataTemplate>
-    </Shell.FlyoutHeaderTemplate>
+    <Shell.Resources>
+        <ResourceDictionary>
+            <Style TargetType="TabBar">
+                <Setter Property="Shell.TabBarBackgroundColor" Value="White" />
+                <Setter Property="Shell.TabBarTitleColor" Value="#37246B" />
+                <!-- Tu morado oscuro para el tab activo -->
+                <Setter Property="Shell.TabBarUnselectedColor" Value="#B39DDB" />
+                <!-- Morado claro/gris para inactivos -->
+            </Style>
+        </ResourceDictionary>
+    </Shell.Resources>
 
     <!-- ========================================== -->
-    <!-- 2. DISEÑO DE CADA OPCIÓN DEL MENÚ          -->
+    <!-- ZONA PÚBLICA (Sin Menú Inferior)           -->
     <!-- ========================================== -->
-    <Shell.ItemTemplate>
-        <DataTemplate>
-            <Grid Padding="25,18" ColumnSpacing="15">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Column="0" Text="🔸" FontSize="14" VerticalOptions="Center" TextColor="#7663B5" />
-                <Label Grid.Column="1" Text="{Binding Title}" TextColor="#37246B" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="16" VerticalOptions="Center" />
-            </Grid>
-        </DataTemplate>
-    </Shell.ItemTemplate>
-
-    <!-- ========================================== -->
-    <!-- ZONA PÚBLICA (Sin Menú)                    -->
-    <!-- ========================================== -->
+    <!-- Al poner Shell.TabBarIsVisible="False", aseguramos que en estas pantallas no salga la barra -->
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
         Route="login" 
-        Shell.FlyoutBehavior="Disabled" 
-        Shell.FlyoutItemIsVisible="False" />
+        Shell.TabBarIsVisible="False" />
 
     <ShellContent
         Title="Onboarding"
         ContentTemplate="{DataTemplate local:OnboardingPage}"
         Route="onboarding" 
-        Shell.FlyoutBehavior="Disabled" 
-        Shell.FlyoutItemIsVisible="False" />
+        Shell.TabBarIsVisible="False" />
 
     <!-- ========================================== -->
-    <!-- ZONA PRIVADA (Menú de Hamburguesa)         -->
+    <!-- ZONA PRIVADA (Barra de Pestañas Inferior)  -->
     <!-- ========================================== -->
-    <FlyoutItem Title="Central de Alertas">
-        <ShellContent
-            ContentTemplate="{DataTemplate local:DashboardPage}"
-            Route="dashboard" />
-    </FlyoutItem>
+    <TabBar Route="main">
 
-    <FlyoutItem Title="Mi Red de Seguridad">
-        <ShellContent
-            ContentTemplate="{DataTemplate local:ContactPage}"
-            Route="contacts" />
-    </FlyoutItem>
+        <!-- Sin propiedad Title, el ícono se centra automáticamente -->
+        <Tab Icon="dashboard_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate local:DashboardPage}"
+                Route="dashboard" />
+        </Tab>
 
-    <FlyoutItem Title="Mi Perfil">
-        <ShellContent
-            ContentTemplate="{DataTemplate local:ProfilePage}"
-            Route="profile" />
-    </FlyoutItem>
+        <Tab Icon="contacts_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate local:ContactPage}"
+                Route="contacts" />
+        </Tab>
+
+        <Tab Icon="profile_icon.png">
+            <ShellContent
+                ContentTemplate="{DataTemplate local:ProfilePage}"
+                Route="profile" />
+        </Tab>
+
+    </TabBar>
 
 </Shell>

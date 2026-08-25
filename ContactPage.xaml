@@ -3,97 +3,118 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SafetyAppMobile.ContactPage"
              Title="Mis Protectores"
+             NavigationPage.HasNavigationBar="False"
              BackgroundColor="{StaticResource PulsoFondo}">
     <!-- 🟣 Fondo oficial -->
 
-    <Grid RowDefinitions="Auto, *">
+    <!-- Contenedor Maestro: Permite superponer el FAB sobre la lista -->
+    <Grid>
 
-        <VerticalStackLayout Grid.Row="0" Padding="20" Spacing="10">
-            <Grid ColumnDefinitions="*, Auto, Auto" ColumnSpacing="15">
+        <!-- CONTENIDO PRINCIPAL -->
+        <Grid RowDefinitions="Auto, *">
 
-                <!-- Título -->
-                <Label Grid.Column="0" Text="Red de Emergencia" 
+            <VerticalStackLayout Grid.Row="0" Padding="20" Spacing="10">
+                <!-- Título (Botón superior eliminado) -->
+                <Label Text="Red de Emergencia" 
                        FontSize="23"
                        Padding="0"
                        FontFamily="PoppinsBold"
                        FontAttributes="Bold" 
+                       TextColor="{StaticResource PulsoMoradoProfundo}"/>
+
+                <!-- Subtítulo -->
+                <Label Text="Estas personas recibirán un SMS con tu ubicación si presionas el botón de pánico." 
+                       FontSize="14" 
+                       FontFamily="PoppinsRegular"
+                       TextColor="{StaticResource PulsoMoradoMedio}"/>
+            </VerticalStackLayout>
+
+            <CollectionView Grid.Row="1" x:Name="ContactsList" Margin="10,0">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <!-- 🃏 Tarjeta Blanca: Hace contraste con el fondo PulsoFondo -->
+                        <Frame BackgroundColor="White" Margin="10,8" CornerRadius="12" HasShadow="True" Padding="15">
+
+                            <!-- Opcional: Puedes dejar esto si quieres que TODA la tarjeta sea clickeable también -->
+                            <Frame.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnContactCardTapped" CommandParameter="{Binding .}" />
+                            </Frame.GestureRecognizers>
+
+                            <Grid ColumnDefinitions="Auto, *, Auto">
+
+                                <!-- Círculo del Avatar -->
+                                <Frame Grid.Column="0" BackgroundColor="{StaticResource PulsoMoradoMedio}" CornerRadius="20" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False">
+                                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20" InputTransparent="True"/>
+                                </Frame>
+
+                                <!-- Textos del Contacto -->
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0" InputTransparent="True">
+                                    <Label Text="{Binding name}" TextColor="{StaticResource PulsoMoradoProfundo}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="16"/>
+                                    <Label Text="{Binding phone_number}" TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="14"/>
+                                </VerticalStackLayout>
+
+                                <!-- Acción de editar (¡AQUÍ ESTÁ LA SOLUCIÓN!) -->
+                                <Border Grid.Column="2"
+                    VerticalOptions="Center"
+                    BackgroundColor="#F4EEFF"
+                    Stroke="{StaticResource PulsoMoradoMedio}"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 10"
+                    Padding="12,6"
+                    Margin="0,0,4,0">
+
+                                    <!-- Le asignamos el toque DIRECTAMENTE al botón de editar -->
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnContactCardTapped" CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+
+                                    <!-- InputTransparent="True" asegura que el texto no bloquee tu dedo -->
+                                    <Label Text="Editar"
                        TextColor="{StaticResource PulsoMoradoProfundo}"
-                       VerticalOptions="Center"/>
+                       FontFamily="PoppinsBold"
+                       FontAttributes="Bold"
+                       FontSize="13"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center" 
+                       InputTransparent="True" />
+                                </Border>
 
-                <!-- Botón de Agregar -->
-                <Button Grid.Column="1" Text="+ Agregar" 
-                        Clicked="OnAddContactClicked"
-                        BackgroundColor="{StaticResource PulsoMoradoProfundo}"
-                        TextColor="{StaticResource PulsoFondo}"
-                        FontFamily="PoppinsBold"
-                        FontAttributes="Bold"
-                        CornerRadius="8"
-                        HeightRequest="35"
-                        Padding="6,0"/>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
 
-            </Grid>
+                <!-- Pantalla vacía (Cuando no hay contactos) -->
+                <CollectionView.EmptyView>
+                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,50,0,0">
+                        <Label Text="📭" FontSize="48" HorizontalOptions="Center"/>
+                        <Label Text="Aún no tienes contactos en tu red." TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="16" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </CollectionView.EmptyView>
 
-            <!-- Subtítulo -->
-            <Label Text="Estas personas recibirán un SMS con tu ubicación si presionas el botón de pánico." 
-                   FontSize="14" 
-                   FontFamily="PoppinsRegular"
-                   TextColor="{StaticResource PulsoMoradoMedio}"/>
-        </VerticalStackLayout>
+            </CollectionView>
+        </Grid>
 
-        <CollectionView Grid.Row="1" x:Name="ContactsList" Margin="10,0">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <!-- 🃏 Tarjeta Blanca: Hace contraste con el fondo PulsoFondo -->
-                    <Frame BackgroundColor="White" Margin="10,8" CornerRadius="12" HasShadow="True" Padding="15">
+        <!-- FLOATING ACTION BUTTON (FAB) -->
+        <!-- Pegado abajo a la derecha usando HorizontalOptions y VerticalOptions -->
+        <Button Text="+" 
+                Clicked="OnAddContactClicked"
+                BackgroundColor="{StaticResource PulsoMoradoProfundo}"
+                TextColor="{StaticResource PulsoFondo}"
+                FontFamily="PoppinsBold"
+                FontSize="28"
+                CornerRadius="28"
+                WidthRequest="56"
+                HeightRequest="56"
+                HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="20"
+                Padding="0">
+            <!-- Sombra para darle profundidad y que "flote" -->
+            <Button.Shadow>
+                <Shadow Brush="Black" Opacity="0.3" Offset="0,4" Radius="5" />
+            </Button.Shadow>
+        </Button>
 
-                        <Frame.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnContactCardTapped" CommandParameter="{Binding .}" />
-                        </Frame.GestureRecognizers>
-
-                        <Grid ColumnDefinitions="Auto, *, Auto">
-
-                            <!-- Círculo del Avatar -->
-                            <Frame Grid.Column="0" BackgroundColor="{StaticResource PulsoMoradoMedio}" CornerRadius="20" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False">
-                                <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20"/>
-                            </Frame>
-
-                            <!-- Textos del Contacto -->
-                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0">
-                                <Label Text="{Binding name}" TextColor="{StaticResource PulsoMoradoProfundo}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="16"/>
-                                <Label Text="{Binding phone_number}" TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="14"/>
-                            </VerticalStackLayout>
-
-                            <!-- Acción de editar -->
-                            <Border Grid.Column="2"
-                                    VerticalOptions="Center"
-                                    BackgroundColor="#F4EEFF"
-                                    Stroke="{StaticResource PulsoMoradoMedio}"
-                                    StrokeThickness="1"
-                                    StrokeShape="RoundRectangle 10"
-                                    Padding="12,6"
-                                    Margin="0,0,4,0">
-                                <Label Text="Editar"
-                                       TextColor="{StaticResource PulsoMoradoProfundo}"
-                                       FontFamily="PoppinsBold"
-                                       FontAttributes="Bold"
-                                       FontSize="13"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center" />
-                            </Border>
-
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-
-            <!-- Pantalla vacía (Cuando no hay contactos) -->
-            <CollectionView.EmptyView>
-                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,50,0,0">
-                    <Label Text="📭" FontSize="48" HorizontalOptions="Center"/>
-                    <Label Text="Aún no tienes contactos en tu red." TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="16" HorizontalOptions="Center"/>
-                </VerticalStackLayout>
-            </CollectionView.EmptyView>
-
-        </CollectionView>
     </Grid>
 </ContentPage>
