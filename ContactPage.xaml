@@ -1,120 +1,210 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:SafetyAppMobile"
              x:Class="SafetyAppMobile.ContactPage"
-             Title="Mis Protectores"
-             NavigationPage.HasNavigationBar="False"
-             BackgroundColor="{StaticResource PulsoFondo}">
-    <!-- 🟣 Fondo oficial -->
+             BackgroundColor="#5F42CA"
+             Shell.NavBarIsVisible="False">
+    <!-- Fondo morado principal igual que en ProfilePage -->
 
-    <!-- Contenedor Maestro: Permite superponer el FAB sobre la lista -->
     <Grid>
+        <!-- CONTENIDO PRINCIPAL DIVIDIDO EN 2 FILAS -->
+        <Grid RowDefinitions="Auto,*">
 
-        <!-- CONTENIDO PRINCIPAL -->
-        <Grid RowDefinitions="Auto, *">
+            <!-- ── 1. CABECERA MORADA ──────────────────────────────────────── -->
+            <VerticalStackLayout Grid.Row="0"
+                                 Padding="25,40,25,30"
+                                 Spacing="5">
 
-            <VerticalStackLayout Grid.Row="0" Padding="20" Spacing="10">
-                <!-- Título (Botón superior eliminado) -->
-                <Label Text="Red de Emergencia" 
-                       FontSize="23"
-                       Padding="0"
+                <!-- Etiqueta de seguridad superior -->
+                <HorizontalStackLayout Spacing="6" Margin="0,0,0,5">
+                    <Label Text="🛡️" FontSize="12" VerticalOptions="Center"/>
+                    <Label Text="SEGURIDAD PERSONAL" 
+                           TextColor="#D1CBE0" 
+                           FontFamily="PoppinsBold" 
+                           FontSize="11" 
+                           CharacterSpacing="1"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <!-- Título -->
+                <Label Text="Red de Emergencia"
                        FontFamily="PoppinsBold"
-                       FontAttributes="Bold" 
-                       TextColor="{StaticResource PulsoMoradoProfundo}"/>
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="White"
+                       CharacterSpacing="-0.5"
+                       Margin="0,0,0,2"/>
 
                 <!-- Subtítulo -->
-                <Label Text="Estas personas recibirán un SMS con tu ubicación si presionas el botón de pánico." 
-                       FontSize="14" 
+                <Label Text="Estas personas recibirán un SMS con tu ubicación si presionas el botón de pánico."
                        FontFamily="PoppinsRegular"
-                       TextColor="{StaticResource PulsoMoradoMedio}"/>
+                       FontSize="13"
+                       TextColor="#E2D9F3"
+                       LineHeight="1.4"
+                       Margin="0,0,0,5"/>
             </VerticalStackLayout>
 
-            <CollectionView Grid.Row="1" x:Name="ContactsList" Margin="10,0">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <!-- 🃏 Tarjeta Blanca: Hace contraste con el fondo PulsoFondo -->
-                        <Frame BackgroundColor="White" Margin="10,8" CornerRadius="12" HasShadow="True" Padding="15">
+            <!-- ── 2. TARJETA BLANCA FLOTANTE CON EL CONTENIDO ──────────────── -->
+            <Border Grid.Row="1"
+                    BackgroundColor="#F6F3FB"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 30,30,0,0"
+                    Padding="0">
 
-                            <!-- Opcional: Puedes dejar esto si quieres que TODA la tarjeta sea clickeable también -->
-                            <Frame.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="OnContactCardTapped" CommandParameter="{Binding .}" />
-                            </Frame.GestureRecognizers>
+                <Grid>
+                    <ScrollView>
+                        <VerticalStackLayout Padding="22,25,22,100" Spacing="15">
 
-                            <Grid ColumnDefinitions="Auto, *, Auto">
+                            <!-- Indicadores: Contador de contactos y puntitos -->
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,5" VerticalOptions="Center">
+                                <!-- Status dot + label -->
+                                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                                    <Ellipse x:Name="StatusDot" WidthRequest="8" HeightRequest="8" Fill="#22c55e"/>
+                                    <Label x:Name="ContactCountLabel"
+                                           Text="0 / 5 contactos"
+                                           FontFamily="PoppinsBold"
+                                           FontSize="13"
+                                           TextColor="#6F6680"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
 
-                                <!-- Círculo del Avatar -->
-                                <Frame Grid.Column="0" BackgroundColor="{StaticResource PulsoMoradoMedio}" CornerRadius="20" HeightRequest="40" WidthRequest="40" Padding="0" HasShadow="False">
-                                    <Label Text="👤" HorizontalOptions="Center" VerticalOptions="Center" FontSize="20" InputTransparent="True"/>
-                                </Frame>
-
-                                <!-- Textos del Contacto -->
-                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Margin="15,0,0,0" InputTransparent="True">
-                                    <Label Text="{Binding name}" TextColor="{StaticResource PulsoMoradoProfundo}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="16"/>
-                                    <Label Text="{Binding phone_number}" TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="14"/>
-                                </VerticalStackLayout>
-
-                                <!-- Acción de editar (¡AQUÍ ESTÁ LA SOLUCIÓN!) -->
-                                <Border Grid.Column="2"
-                    VerticalOptions="Center"
-                    BackgroundColor="#F4EEFF"
-                    Stroke="{StaticResource PulsoMoradoMedio}"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 10"
-                    Padding="12,6"
-                    Margin="0,0,4,0">
-
-                                    <!-- Le asignamos el toque DIRECTAMENTE al botón de editar -->
-                                    <Border.GestureRecognizers>
-                                        <TapGestureRecognizer Tapped="OnContactCardTapped" CommandParameter="{Binding .}" />
-                                    </Border.GestureRecognizers>
-
-                                    <!-- InputTransparent="True" asegura que el texto no bloquee tu dedo -->
-                                    <Label Text="Editar"
-                       TextColor="{StaticResource PulsoMoradoProfundo}"
-                       FontFamily="PoppinsBold"
-                       FontAttributes="Bold"
-                       FontSize="13"
-                       HorizontalOptions="Center"
-                       VerticalOptions="Center" 
-                       InputTransparent="True" />
-                                </Border>
-
+                                <!-- Progress dots -->
+                                <HorizontalStackLayout Grid.Column="1" Spacing="5" VerticalOptions="Center">
+                                    <Ellipse x:Name="Dot1" WidthRequest="8" HeightRequest="8" Fill="#D8D3E2"/>
+                                    <Ellipse x:Name="Dot2" WidthRequest="8" HeightRequest="8" Fill="#D8D3E2"/>
+                                    <Ellipse x:Name="Dot3" WidthRequest="8" HeightRequest="8" Fill="#D8D3E2"/>
+                                    <Ellipse x:Name="Dot4" WidthRequest="8" HeightRequest="8" Fill="#D8D3E2"/>
+                                    <Ellipse x:Name="Dot5" WidthRequest="8" HeightRequest="8" Fill="#D8D3E2"/>
+                                </HorizontalStackLayout>
                             </Grid>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
 
-                <!-- Pantalla vacía (Cuando no hay contactos) -->
-                <CollectionView.EmptyView>
-                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="15" Margin="0,50,0,0">
-                        <Label Text="📭" FontSize="48" HorizontalOptions="Center"/>
-                        <Label Text="Aún no tienes contactos en tu red." TextColor="{StaticResource PulsoMoradoMedio}" FontFamily="PoppinsRegular" FontSize="16" HorizontalOptions="Center"/>
-                    </VerticalStackLayout>
-                </CollectionView.EmptyView>
+                            <!-- Lista de Contactos -->
+                            <CollectionView x:Name="ContactsList" SelectionMode="None">
+                                <CollectionView.ItemsLayout>
+                                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                                </CollectionView.ItemsLayout>
 
-            </CollectionView>
+                                <CollectionView.EmptyView>
+                                    <VerticalStackLayout HorizontalOptions="Center" Padding="28,40,28,32" Spacing="12">
+                                        <Border BackgroundColor="#EDE8F7" WidthRequest="76" HeightRequest="76" HorizontalOptions="Center">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="24"/>
+                                            </Border.StrokeShape>
+                                            <Label Text="🛡️" FontSize="34" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                        </Border>
+                                        <Label Text="Sin contactos aún" FontFamily="PoppinsBold" FontSize="17" FontAttributes="Bold" TextColor="#2D2440" HorizontalOptions="Center"/>
+                                        <Label Text="Agrega personas de confianza para activar tu red de emergencia." FontFamily="PoppinsRegular" FontSize="14" TextColor="#6F6680" LineHeight="1.6" HorizontalTextAlignment="Center" MaximumWidthRequest="240" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </CollectionView.EmptyView>
+
+                                <CollectionView.ItemTemplate>
+                                    <DataTemplate>
+                                        <!-- ── CONTACT CARD ──────────────────── -->
+                                        <Border BackgroundColor="#FFFFFF" Margin="0" Padding="15,15,16,15">
+                                            <Border.StrokeShape>
+                                                <RoundRectangle CornerRadius="18"/>
+                                            </Border.StrokeShape>
+                                            <Border.Shadow>
+                                                <Shadow Brush="#4B2E83" Offset="0,2" Radius="8" Opacity="0.07"/>
+                                            </Border.Shadow>
+                                            <Border.Stroke>
+                                                <SolidColorBrush Color="#D8D3E2"/>
+                                            </Border.Stroke>
+
+                                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14">
+
+                                                <!-- Avatar circle -->
+                                                <Border Grid.Column="0" WidthRequest="46" HeightRequest="46" VerticalOptions="Center">
+                                                    <Border.StrokeShape>
+                                                        <RoundRectangle CornerRadius="23"/>
+                                                    </Border.StrokeShape>
+                                                    <Border.Background>
+                                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                            <GradientStop Color="#4B2E83" Offset="0"/>
+                                                            <GradientStop Color="#6C4BC1" Offset="1"/>
+                                                        </LinearGradientBrush>
+                                                    </Border.Background>
+                                                    <Label Text="{Binding Initial}" TextColor="#FFFFFF" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                                </Border>
+
+                                                <!-- Name + phone -->
+                                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                    <Label Text="{Binding name}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="15" TextColor="#2D2440" LineBreakMode="TailTruncation"/>
+                                                    <Label Text="{Binding phone_number}" FontFamily="PoppinsRegular" FontSize="13" TextColor="#6F6680"/>
+                                                </VerticalStackLayout>
+
+                                                <!-- Edit button only -->
+                                                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                                    <Border WidthRequest="40" HeightRequest="40" BackgroundColor="#EDE8F7">
+                                                        <Border.StrokeShape>
+                                                            <RoundRectangle CornerRadius="10"/>
+                                                        </Border.StrokeShape>
+                                                        <Border.Stroke>
+                                                            <SolidColorBrush Color="#D8D3E2"/>
+                                                        </Border.Stroke>
+                                                        <Label Text="✏️" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center">
+                                                            <Label.GestureRecognizers>
+                                                                <TapGestureRecognizer Tapped="OnEditContactTapped" CommandParameter="{Binding .}"/>
+                                                            </Label.GestureRecognizers>
+                                                        </Label>
+                                                    </Border>
+                                                </HorizontalStackLayout>
+
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </CollectionView.ItemTemplate>
+                            </CollectionView>
+
+                            <!-- Info box -->
+                            <Border x:Name="InfoBox" BackgroundColor="#EDE8F7" Padding="13,13,15,13" IsVisible="False">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="14"/>
+                                </Border.StrokeShape>
+                                <Border.Stroke>
+                                    <SolidColorBrush Color="#D8D3E2"/>
+                                </Border.Stroke>
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                    <Label Grid.Column="0" Text="ℹ️" FontSize="18" VerticalOptions="Start" Margin="0,1,0,0"/>
+                                    <Label Grid.Column="1" Text="Al activarse la alerta, se enviará tu ubicación GPS exacta a todos los contactos de esta lista. Máximo 5 personas." FontFamily="PoppinsRegular" FontSize="13" TextColor="#6F6680" LineHeight="1.6"/>
+                                </Grid>
+                            </Border>
+
+                        </VerticalStackLayout>
+                    </ScrollView>
+                </Grid>
+            </Border>
         </Grid>
 
-        <!-- FLOATING ACTION BUTTON (FAB) -->
-        <!-- Pegado abajo a la derecha usando HorizontalOptions y VerticalOptions -->
-        <Button Text="+" 
-                Clicked="OnAddContactClicked"
-                BackgroundColor="{StaticResource PulsoMoradoProfundo}"
-                TextColor="{StaticResource PulsoFondo}"
-                FontFamily="PoppinsBold"
-                FontSize="28"
-                CornerRadius="28"
-                WidthRequest="56"
-                HeightRequest="56"
-                HorizontalOptions="End"
-                VerticalOptions="End"
-                Margin="20"
-                Padding="0">
-            <!-- Sombra para darle profundidad y que "flote" -->
-            <Button.Shadow>
-                <Shadow Brush="Black" Opacity="0.3" Offset="0,4" Radius="5" />
-            </Button.Shadow>
-        </Button>
+        <!-- ── FAB (Floating Action Button) ────────────────────────────────── -->
+        <Border x:Name="AddButton"
+                WidthRequest="58" HeightRequest="58"
+                HorizontalOptions="End" VerticalOptions="End"
+                Margin="0,0,22,28">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="29"/>
+            </Border.StrokeShape>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#6C4BC1" Offset="0"/>
+                    <GradientStop Color="#4B2E83" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Shadow>
+                <Shadow Brush="#4B2E83" Offset="0,6" Radius="22" Opacity="0.4"/>
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnAddContactClicked"/>
+            </Border.GestureRecognizers>
+            <Label Text="+"
+                   TextColor="#FFFFFF"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center"
+                   Margin="0,0,0,2"/>
+        </Border>
 
     </Grid>
 </ContentPage>

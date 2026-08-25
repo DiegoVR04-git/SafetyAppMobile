@@ -1,27 +1,28 @@
-using System.Text.Json;
 using Microsoft.Maui.Storage;
+using System.Text.Json;
 
 namespace SafetyAppMobile;
+
+public class ContactListWrapper
+{
+    public List<ContactResponse> contacts { get; set; }
+}
+
+public class ContactResponse
+{
+    public int contact_id { get; set; }
+    public string name { get; set; }
+    public string phone_number { get; set; }
+
+    // Propiedad calculada para mostrar únicamente la inicial en mayúscula
+    public string Initial => !string.IsNullOrEmpty(name) ? name.Substring(0, 1).ToUpper() : "?";
+}
 
 public partial class ContactPage : ContentPage
 {
     private const string BaseUrl = "https://safety-app-api.onrender.com";
     private readonly HttpClient _httpClient;
     private int _currentUserId;
-
-    // 1. NUEVO: Creamos una "Caja" principal que coincida con el diccionario de Python
-    public class ContactListWrapper
-    {
-        public List<ContactResponse> contacts { get; set; }
-    }
-
-    // 2. El molde de tu contacto individual (ya lo tenías)
-    public class ContactResponse
-    {
-        public int contact_id { get; set; }
-        public string name { get; set; }
-        public string phone_number { get; set; }
-    }
 
     public ContactPage()
     {
@@ -47,45 +48,69 @@ public partial class ContactPage : ContentPage
             if (response.IsSuccessStatusCode)
             {
                 var json = await response.Content.ReadAsStringAsync();
-
-                // 3. NUEVO: Desempaquetamos la caja grande primero
                 var wrapper = JsonSerializer.Deserialize<ContactListWrapper>(json);
 
-                // 4. NUEVO: Le entregamos a la pantalla solo la lista que venía adentro
                 if (wrapper != null && wrapper.contacts != null)
                 {
-                    ContactsList.ItemsSource = wrapper.contacts;
+                    var lista = wrapper.contacts;
+                    ContactsList.ItemsSource = lista;
+
+                    int total = lista.Count;
+                    ContactCountLabel.Text = $"{total} / 5 contactos";
+
+                    InfoBox.IsVisible = total > 0;
+
+                    StatusDot.Fill = total > 0
+                        ? new SolidColorBrush(Color.FromArgb("#22c55e"))
+                        : new SolidColorBrush(Color.FromArgb("#D8D3E2"));
+
+                    ActualizarPuntitos(total);
+
+                    if (total >= 5)
+                    {
+                        AddButton.IsEnabled = false;
+                        AddButton.Opacity = 0.5;
+                    }
+                    else
+                    {
+                        AddButton.IsEnabled = true;
+                        AddButton.Opacity = 1.0;
+                    }
                 }
             }
         }
         catch (Exception ex)
         {
-            // Cambié el mensaje para que, si vuelve a fallar, nos diga el error real
             await DisplayAlert("Error Técnico", ex.Message, "OK");
         }
     }
 
-
-    // NUEVA FUNCIÓN: Responde al toque directo de la tarjeta
-    private async void OnContactCardTapped(object sender, TappedEventArgs e)
+    private void ActualizarPuntitos(int count)
     {
-        // e.Parameter contiene exactamente el contacto que el usuario tocó
-        if (e.Parameter is ContactResponse tappedContact)
+        Color activo = Color.FromArgb("#4B2E83");
+        Color inactivo = Color.FromArgb("#D8D3E2");
+
+        Dot1.Fill = count >= 1 ? activo : inactivo;
+        Dot2.Fill = count >= 2 ? activo : inactivo;
+        Dot3.Fill = count >= 3 ? activo : inactivo;
+        Dot4.Fill = count >= 4 ? activo : inactivo;
+        Dot5.Fill = count >= 5 ? activo : inactivo;
+    }
+
+    private async void OnEditContactTapped(object sender, TappedEventArgs e)
+    {
+        if (e.Parameter is ContactResponse contact)
         {
-            // Abrimos la página de edición con los datos precisos
-            var editPage = new EditContactPage(tappedContact.contact_id, tappedContact.name, tappedContact.phone_number);
+            var editPage = new EditContactPage(contact.contact_id, contact.name, contact.phone_number);
+            editPage.Disappearing += async (s, args) => await LoadContacts();
             await Navigation.PushModalAsync(editPage);
         }
     }
 
     private async void OnAddContactClicked(object sender, EventArgs e)
     {
-        // Abre la pantalla de agregar un nuevo contacto
         var addPage = new AddContactPage();
-
-        // MAUI a veces no recarga OnAppearing al cerrar modales en Android, así que lo forzamos:
         addPage.Disappearing += async (s, args) => await LoadContacts();
-
         await Navigation.PushModalAsync(addPage);
     }
 }

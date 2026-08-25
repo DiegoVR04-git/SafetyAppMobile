@@ -15,58 +15,71 @@ public partial class EditContactPage : ContentPage
         _httpClient = new HttpClient();
         _contactId = contactId;
 
-        // Precargamos el nombre
+        // 1. Precargamos el nombre y extraemos la inicial para el avatar
         NameEntry.Text = currentName;
+        if (!string.IsNullOrEmpty(currentName))
+        {
+            AvatarInitials.Text = currentName.Substring(0, 1).ToUpper();
+        }
 
-        // 1. LA INGENIERÍA INVERSA: Cortamos el prefijo para mostrarlo correctamente
+        // 2. Ingeniería inversa del teléfono (separar lada y número)
         if (!string.IsNullOrEmpty(currentPhone))
         {
             if (currentPhone.StartsWith("+52"))
             {
                 CountryCodePicker.SelectedItem = "+52";
-                PhoneEntry.Text = currentPhone.Substring(3); // Corta los primeros 3 caracteres (+52)
+                PhoneEntry.Text = currentPhone.Substring(3);
             }
             else if (currentPhone.StartsWith("+1"))
             {
                 CountryCodePicker.SelectedItem = "+1";
-                PhoneEntry.Text = currentPhone.Substring(2); // Corta los primeros 2 caracteres (+1)
+                PhoneEntry.Text = currentPhone.Substring(2);
             }
             else
             {
-                // Si por alguna razón es un número viejo sin código, lo mostramos tal cual
                 PhoneEntry.Text = currentPhone;
             }
         }
     }
 
+    // Actualizar la inicial del avatar dinámicamente si el usuario escribe otro nombre
+    private void OnNameTextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (!string.IsNullOrWhiteSpace(e.NewTextValue))
+        {
+            AvatarInitials.Text = e.NewTextValue.Substring(0, 1).ToUpper();
+        }
+        else
+        {
+            AvatarInitials.Text = "?";
+        }
+    }
+
+    private async void OnBackTapped(object sender, TappedEventArgs e)
+    {
+        await Navigation.PopModalAsync();
+    }
+
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        StatusLabel.Text = "";
-        StatusLabel.TextColor = Colors.Red;
-
-        var name = NameEntry.Text;
+        var name = NameEntry.Text?.Trim();
         var rawPhone = PhoneEntry.Text?.Trim();
-
-        // 2. Extraer el código seleccionado
         string selectedCode = CountryCodePicker.SelectedItem?.ToString() ?? "+52";
 
-        // 3. Validaciones
+        // Validaciones
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(rawPhone))
         {
-            StatusLabel.Text = "No puedes dejar campos vacíos.";
+            await DisplayAlert("⚠️ Aviso", "No puedes dejar campos vacíos.", "OK");
             return;
         }
 
         if (rawPhone.Length < 10)
         {
-            StatusLabel.Text = "El número debe tener 10 dígitos exactos.";
+            await DisplayAlert("⚠️ Aviso", "El número de teléfono debe tener 10 dígitos.", "OK");
             return;
         }
 
-        SaveBtn.Text = "Guardando...";
-        SaveBtn.IsEnabled = false;
-
-        // 4. LA FUSIÓN: Volvemos a armar el número para mandarlo a la nube
+        // Armar el número completo
         string fullPhoneNumber = selectedCode + rawPhone;
 
         var updateData = new { name = name, phone_number = fullPhoneNumber };
@@ -75,6 +88,9 @@ public partial class EditContactPage : ContentPage
 
         try
         {
+            SaveBtn.Opacity = 0.6;
+            SaveBtn.IsEnabled = false;
+
             var response = await _httpClient.PutAsync($"{BaseUrl}/contacts/{_contactId}", content);
 
             if (response.IsSuccessStatusCode)
@@ -84,31 +100,25 @@ public partial class EditContactPage : ContentPage
             else
             {
                 var errorText = await response.Content.ReadAsStringAsync();
-                StatusLabel.Text = $"Error: {response.StatusCode} - {errorText}";
-                SaveBtn.Text = "Guardar Cambios";
+                await DisplayAlert("❌ Error", $"No se pudo actualizar: {errorText}", "OK");
+                SaveBtn.Opacity = 1.0;
                 SaveBtn.IsEnabled = true;
             }
         }
         catch (Exception)
         {
-            StatusLabel.Text = "Sin conexión con el servidor.";
-            SaveBtn.Text = "Guardar Cambios";
+            await DisplayAlert("❌ Error de red", "Sin conexión con el servidor.", "OK");
+            SaveBtn.Opacity = 1.0;
             SaveBtn.IsEnabled = true;
         }
     }
 
-    private async void OnCancelClicked(object sender, EventArgs e)
-    {
-        await Navigation.PopModalAsync();
-    }
-
     // ==========================================
-    // METODOS DEL OVERLAY DE ELIMINACIÓN
+    // MÉTODOS DEL OVERLAY DE ELIMINACIÓN
     // ==========================================
 
     private async void OnDeleteClicked(object sender, EventArgs e)
     {
-        // En lugar del cuadro blanco genérico, mostramos nuestro diseño
         CustomDeleteOverlay.IsVisible = true;
         CustomDeleteOverlay.Opacity = 0;
         await CustomDeleteOverlay.FadeTo(1, 250);
@@ -116,20 +126,14 @@ public partial class EditContactPage : ContentPage
 
     private async void OnCancelDeleteAlertClicked(object sender, EventArgs e)
     {
-        // Ocultar alerta si se arrepiente
         await CustomDeleteOverlay.FadeTo(0, 200);
         CustomDeleteOverlay.IsVisible = false;
     }
 
     private async void OnConfirmDeleteClicked(object sender, EventArgs e)
     {
-        // 1. Ocultamos el overlay
         await CustomDeleteOverlay.FadeTo(0, 200);
         CustomDeleteOverlay.IsVisible = false;
-
-        // 2. Ejecutamos la lógica de borrado original
-        DeleteBtn.Text = "Eliminando...";
-        DeleteBtn.IsEnabled = false;
 
         try
         {
@@ -141,16 +145,12 @@ public partial class EditContactPage : ContentPage
             }
             else
             {
-                StatusLabel.Text = "Error al eliminar. Intenta de nuevo.";
-                DeleteBtn.Text = "🗑️ Eliminar Contacto";
-                DeleteBtn.IsEnabled = true;
+                await DisplayAlert("❌ Error", "No se pudo eliminar el contacto. Intenta de nuevo.", "OK");
             }
         }
         catch (Exception)
         {
-            StatusLabel.Text = "Sin conexión con el servidor.";
-            DeleteBtn.Text = "🗑️ Eliminar Contacto";
-            DeleteBtn.IsEnabled = true;
+            await DisplayAlert("❌ Error de red", "Sin conexión con el servidor.", "OK");
         }
     }
 }

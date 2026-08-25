@@ -2,79 +2,292 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="SafetyAppMobile.ProfilePage"
-             Title="Mis Datos"
+             Title="Mi Perfil"
              NavigationPage.HasNavigationBar="False"
-             BackgroundColor="#F4F4FA">
-    <!-- Fondo lavanda claro -->
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#5B21B6">
 
-    <!-- Dejamos solo el ScrollView. La barra superior blanca la pone MAUI automáticamente -->
-    <ScrollView>
-        <VerticalStackLayout Padding="20,20,20,30" Spacing="0">
+    <Grid RowDefinitions="Auto, *">
 
-            <!-- TÍTULO ESTILO "Red de Emergencia" -->
-            <Label Text="Mi" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#37246B" LineHeight="1.0"/>
-            <Label Text="Perfil" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#37246B" LineHeight="1.0" Margin="0,0,0,10"/>
+        <!-- ============================================ -->
+        <!-- 1. CABECERA MORADA                           -->
+        <!-- ============================================ -->
+        <VerticalStackLayout Grid.Row="0" Padding="24,52,24,28" Spacing="4">
 
-            <!-- SUBTÍTULO -->
-            <Label Text="Actualiza tus datos y el correo donde recibirás el reporte de evidencia S.O.S." 
-                   TextColor="#7663B5" FontSize="14" Margin="0,0,0,25" LineBreakMode="WordWrap"/>
+            <!-- Badge de seguridad -->
+            <HorizontalStackLayout Spacing="6" Margin="0,0,0,10">
+                <Label Text="🛡" FontSize="11" VerticalOptions="Center"/>
+                <Label Text="SEGURIDAD PERSONAL"
+                       TextColor="#C4B5FD"
+                       FontFamily="PoppinsBold"
+                       FontSize="10.5"
+                       CharacterSpacing="1.5"
+                       VerticalOptions="Center"/>
+            </HorizontalStackLayout>
 
-            <!-- TARJETA 1: Nombre -->
-            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,15">
-                <Grid ColumnDefinitions="Auto, *">
-                    <!-- Círculo del Ícono -->
-                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
-                        <Label Text="👤" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Frame>
-                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                        <Label Text="Nombre Completo" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
-                        <Entry x:Name="NameEntry" Placeholder="Tu nombre" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent" Margin="0,-5,0,0"/>
+            <!-- Título -->
+            <Label Text="Mi Perfil"
+                   FontSize="30"
+                   FontFamily="PoppinsBold"
+                   FontAttributes="Bold"
+                   TextColor="White"/>
+
+            <!-- Subtítulo -->
+            <Label Text="Actualiza tus datos y el correo donde recibirás el reporte de evidencia S.O.S."
+                   TextColor="#DDD6FE"
+                   FontFamily="PoppinsRegular"
+                   FontSize="13"
+                   LineBreakMode="WordWrap"
+                   Margin="0,6,0,0"/>
+        </VerticalStackLayout>
+
+        <!-- ============================================ -->
+        <!-- 2. CUERPO CON CURVA SUPERIOR                 -->
+        <!-- ============================================ -->
+        <Border Grid.Row="1"
+                BackgroundColor="#F0EBF9"
+                Stroke="Transparent"
+                StrokeShape="RoundRectangle 32,32,0,0"
+                Padding="0">
+
+            <ScrollView>
+                <VerticalStackLayout Padding="20,24,20,44" Spacing="16">
+
+                    <!-- ── Avatar + Nombre + Estado ──────────────── -->
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="14" Margin="0,4,0,6">
+
+                        <Border Grid.Column="0"
+                                BackgroundColor="#6D28D9"
+                                Stroke="Transparent"
+                                StrokeShape="RoundRectangle 26"
+                                HeightRequest="52" WidthRequest="52"
+                                HorizontalOptions="Start" VerticalOptions="Center">
+                            <Label x:Name="AvatarInitialLabel"
+                                   Text="M"
+                                   TextColor="White"
+                                   FontFamily="PoppinsBold"
+                                   FontAttributes="Bold"
+                                   FontSize="20"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"/>
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="3">
+                            <Label x:Name="HeaderNameLabel"
+                                   Text="Melissa"
+                                   TextColor="#1A1030"
+                                   FontFamily="PoppinsBold"
+                                   FontAttributes="Bold"
+                                   FontSize="15"/>
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Ellipse Fill="#34D399"
+                                         HeightRequest="7" WidthRequest="7"
+                                         VerticalOptions="Center"/>
+                                <Label Text="Cuenta activa"
+                                       TextColor="#8B7BAE"
+                                       FontFamily="PoppinsRegular"
+                                       FontSize="12"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+
+                    <!-- ── Campo 1: NOMBRE COMPLETO ──────────────── -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="NOMBRE COMPLETO"
+                               TextColor="#7C3AED"
+                               FontFamily="PoppinsBold"
+                               FontSize="10.5"
+                               CharacterSpacing="1.2"/>
+
+                        <Border BackgroundColor="White"
+                                Stroke="#E8E0F5"
+                                StrokeThickness="1.5"
+                                StrokeShape="RoundRectangle 18"
+                                Padding="14,12">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0"
+                                        BackgroundColor="#F0EBF9"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 12"
+                                        HeightRequest="38" WidthRequest="38">
+                                    <Label Text="👤" FontSize="15"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="NameEntry"
+                                       Grid.Column="1"
+                                       Placeholder="Tu nombre completo"
+                                       TextColor="#1A1030"
+                                       PlaceholderColor="#C4B5FD"
+                                       FontFamily="PoppinsRegular"
+                                       FontSize="15"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
                     </VerticalStackLayout>
-                </Grid>
-            </Frame>
 
-            <!-- TARJETA 2: Teléfono -->
-            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,15">
-                <Grid ColumnDefinitions="Auto, *">
-                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
-                        <Label Text="📱" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Frame>
-                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                        <Label Text="Teléfono" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
+                    <!-- ── Campo 2: TELÉFONO ──────────────────────── -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="TELÉFONO"
+                               TextColor="#7C3AED"
+                               FontFamily="PoppinsBold"
+                               FontSize="10.5"
+                               CharacterSpacing="1.2"/>
 
-                        <!-- GRID INTERNO: Lada + Número -->
-                        <Grid ColumnDefinitions="Auto, *" Margin="0,-5,0,0" ColumnSpacing="5">
-                            <Picker x:Name="CountryCodePicker" Grid.Column="0" TextColor="#7663B5" BackgroundColor="Transparent" FontSize="14" SelectedIndex="0">
-                                <Picker.Items>
-                                    <x:String>+52</x:String>
-                                    <x:String>+1</x:String>
-                                </Picker.Items>
-                            </Picker>
-                            <Entry x:Name="PhoneEntry" Grid.Column="1" Keyboard="Telephone" Placeholder="A 10 dígitos" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent"/>
+                        <Border BackgroundColor="White"
+                                Stroke="#E8E0F5"
+                                StrokeThickness="1.5"
+                                StrokeShape="RoundRectangle 18"
+                                Padding="14,6">
+                            <Grid ColumnDefinitions="Auto, Auto, Auto, *"
+                                  ColumnSpacing="10"
+                                  VerticalOptions="Center">
+
+                                <!-- Ícono -->
+                                <Border Grid.Column="0"
+                                        BackgroundColor="#F0EBF9"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 12"
+                                        HeightRequest="38" WidthRequest="38">
+                                    <Label Text="📞" FontSize="15"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Border>
+
+                                <!-- Píldora de código de país -->
+                                <Border Grid.Column="1"
+                                        BackgroundColor="#F0EBF9"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 10"
+                                        Padding="8,4"
+                                        VerticalOptions="Center">
+                                    <Picker x:Name="CountryCodePicker"
+                                            TextColor="#6D28D9"
+                                            FontFamily="PoppinsBold"
+                                            FontSize="13"
+                                            BackgroundColor="Transparent"
+                                            VerticalOptions="Center"
+                                            SelectedIndex="0">
+                                        <Picker.Items>
+                                            <x:String>+52</x:String>
+                                            <x:String>+1</x:String>
+                                        </Picker.Items>
+                                    </Picker>
+                                </Border>
+
+                                <!-- Divisor vertical -->
+                                <BoxView Grid.Column="2"
+                                         WidthRequest="1"
+                                         Color="#E0D5F5"
+                                         VerticalOptions="Fill"
+                                         Margin="0,8"/>
+
+                                <!-- Número -->
+                                <Entry x:Name="PhoneEntry"
+                                       Grid.Column="3"
+                                       Placeholder="5512345678"
+                                       MaxLength="10"
+                                       Keyboard="Telephone"
+                                       TextColor="#1A1030"
+                                       PlaceholderColor="#C4B5FD"
+                                       FontFamily="PoppinsRegular"
+                                       FontSize="15"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- ── Campo 3: CORREO S.O.S ─────────────────── -->
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="CORREO S.O.S"
+                               TextColor="#7C3AED"
+                               FontFamily="PoppinsBold"
+                               FontSize="10.5"
+                               CharacterSpacing="1.2"/>
+
+                        <Border BackgroundColor="White"
+                                Stroke="#E8E0F5"
+                                StrokeThickness="1.5"
+                                StrokeShape="RoundRectangle 18"
+                                Padding="14,12">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0"
+                                        BackgroundColor="#F0EBF9"
+                                        Stroke="Transparent"
+                                        StrokeShape="RoundRectangle 12"
+                                        HeightRequest="38" WidthRequest="38">
+                                    <Label Text="✉️" FontSize="15"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="EmailEntry"
+                                       Grid.Column="1"
+                                       Placeholder="correo@ejemplo.com"
+                                       Keyboard="Email"
+                                       TextColor="#1A1030"
+                                       PlaceholderColor="#C4B5FD"
+                                       FontFamily="PoppinsRegular"
+                                       FontSize="15"
+                                       BackgroundColor="Transparent"
+                                       VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- ── Botón Guardar Cambios ──────────────────── -->
+                    <Button x:Name="SaveBtn"
+                            Text="Guardar Cambios"
+                            Clicked="OnSaveClicked"
+                            BackgroundColor="#5B21B6"
+                            TextColor="White"
+                            FontSize="15"
+                            FontFamily="PoppinsBold"
+                            FontAttributes="Bold"
+                            CornerRadius="20"
+                            HeightRequest="56"
+                            Margin="0,12,0,0">
+                        <Button.Shadow>
+                            <Shadow Brush="#5B21B6" Opacity="0.35" Offset="0,8" Radius="16"/>
+                        </Button.Shadow>
+                    </Button>
+
+                    <!-- ── Separador + Cerrar Sesión ─────────────── -->
+                    <VerticalStackLayout Spacing="12" Margin="0,6,0,0">
+
+                        <!-- Divisor con etiqueta centrada -->
+                        <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="12">
+                            <BoxView Grid.Column="0" HeightRequest="1" Color="#E0D5F5" VerticalOptions="Center"/>
+                            <Label Grid.Column="1"
+                                   Text="CUENTA"
+                                   TextColor="#B8A5D8"
+                                   FontFamily="PoppinsBold"
+                                   FontSize="10.5"
+                                   CharacterSpacing="1"
+                                   VerticalOptions="Center"/>
+                            <BoxView Grid.Column="2" HeightRequest="1" Color="#E0D5F5" VerticalOptions="Center"/>
                         </Grid>
 
+                        <!-- Cerrar Sesión -->
+                        <Button Text="Cerrar Sesión"
+                                Clicked="OnLogoutClicked"
+                                BackgroundColor="White"
+                                TextColor="#EF4444"
+                                BorderColor="#FECACA"
+                                BorderWidth="2"
+                                FontSize="15"
+                                FontFamily="PoppinsBold"
+                                FontAttributes="Bold"
+                                CornerRadius="20"
+                                HeightRequest="54"/>
+
                     </VerticalStackLayout>
-                </Grid>
-            </Frame>
 
-            <!-- TARJETA 3: Correo -->
-            <Frame HasShadow="True" CornerRadius="12" BackgroundColor="White" BorderColor="Transparent" Padding="20,15" Margin="0,0,0,25">
-                <Grid ColumnDefinitions="Auto, *">
-                    <Frame Grid.Column="0" HeightRequest="44" WidthRequest="44" CornerRadius="22" BackgroundColor="#5F42CA" Padding="0" HasShadow="False" VerticalOptions="Center">
-                        <Label Text="📧" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Frame>
-                    <VerticalStackLayout Grid.Column="1" Margin="15,0,0,0" VerticalOptions="Center">
-                        <Label Text="Correo S.O.S" FontAttributes="Bold" TextColor="#37246B" FontSize="16"/>
-                        <Entry x:Name="EmailEntry" Keyboard="Email" Placeholder="ejemplo@correo.com" TextColor="#7663B5" FontSize="14" BackgroundColor="Transparent" Margin="0,-5,0,0"/>
-                    </VerticalStackLayout>
-                </Grid>
-            </Frame>
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
 
-            <!-- BOTÓN GUARDAR -->
-            <Button x:Name="SaveBtn" Text="Guardar Cambios" BackgroundColor="#422979" TextColor="White" 
-                    CornerRadius="8" HeightRequest="50" FontAttributes="Bold" FontSize="16"
-                    Clicked="OnSaveClicked"/>
-
-        </VerticalStackLayout>
-    </ScrollView>
+    </Grid>
 </ContentPage>

@@ -434,28 +434,6 @@ public partial class DashboardPage : ContentPage
         });
     }
 
-    private async void OnLogoutClicked(object sender, EventArgs e)
-    {
-        int currentUserId = Preferences.Default.Get("current_user_id", 0);
-        string onboardingKey = $"IsFirstLaunch_User_{currentUserId}";
-        bool hasCompletedOnboarding = Preferences.Default.Get(onboardingKey, true);
-
-        Preferences.Default.Clear();
-
-        if (currentUserId != 0)
-        {
-            Preferences.Default.Set(onboardingKey, hasCompletedOnboarding);
-        }
-
-        try
-        {
-            await Shell.Current.GoToAsync("///login", false);
-        }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[DashboardPage] Logout navigation error: {ex.Message}");
-        }
-    }
 
     private void CargarSaludoPersonalizado()
     {

@@ -27,7 +27,6 @@
     <!-- ========================================== -->
     <!-- ZONA PÚBLICA (Sin Menú Inferior)           -->
     <!-- ========================================== -->
-    <!-- Al poner Shell.TabBarIsVisible="False", aseguramos que en estas pantallas no salga la barra -->
     <ShellContent
         Title="Login"
         ContentTemplate="{DataTemplate local:LoginPage}"
@@ -45,25 +44,26 @@
     <!-- ========================================== -->
     <TabBar Route="main">
 
-        <!-- Sin propiedad Title, el ícono se centra automáticamente -->
-        <Tab Icon="dashboard_icon.png">
+        <!-- Tab 1: Dashboard -->
+        <Tab Title="Inicio" Icon="dashboard_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate local:DashboardPage}"
                 Route="dashboard" />
         </Tab>
 
-        <Tab Icon="contacts_icon.png">
+        <!-- Tab 2: Contactos -->
+        <Tab Title="Contactos" Icon="contacts_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate local:ContactPage}"
                 Route="contacts" />
         </Tab>
 
-        <Tab Icon="profile_icon.png">
+        <!-- Tab 3: Perfil -->
+        <Tab Title="Perfil" Icon="profile_icon.png">
             <ShellContent
                 ContentTemplate="{DataTemplate local:ProfilePage}"
                 Route="profile" />
         </Tab>
 
     </TabBar>
-
 </Shell>
