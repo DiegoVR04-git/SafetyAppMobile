@@ -6,152 +6,165 @@
              x:Class="SafetyAppMobile.DashboardPage"
              Title="Central de Alertas"
              NavigationPage.HasNavigationBar="False"
-             BackgroundColor="{StaticResource PulsoFondo}">
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#5F42CA">
+    <!-- 🟣 Fondo morado general idéntico al resto de la app -->
 
-    <!-- Esto pone el botón de Salir nativamente en la esquina superior derecha de la barra blanca -->
-    <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Salir" Clicked="OnLogoutClicked" Order="Primary" />
-    </ContentPage.ToolbarItems>
-
-    <!-- 🌟 NUEVO GRID PRINCIPAL: Envuelve el ScrollView y la Alerta para que se superpongan -->
     <Grid>
+        <!-- CONTENIDO PRINCIPAL DIVIDIDO EN 2 FILAS -->
+        <Grid RowDefinitions="Auto,*">
 
-        <!-- ==============================  TODO TU CONTENIDO ORIGINAL  ============================== -->
-        <ScrollView>
-            <Grid Padding="20,15,20,40" RowDefinitions="Auto, Auto, Auto, Auto, *" RowSpacing="15">
+            <!-- ── 1. CABECERA MORADA CON SALUDO Y ESTADO ──────────────── -->
+            <VerticalStackLayout Grid.Row="0"
+                                 Padding="25,40,25,25"
+                                 Spacing="15"
+                                 HorizontalOptions="Center">
 
-                <!-- 0. MENSAJE DE BIENVENIDA -->
-                <VerticalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="2" Margin="0,0,0,5">
-                    <Label x:Name="GreetingLabel" Text="Bienvenida de Vuelta" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#37246B" HorizontalOptions="Center" />
-                    <Label Text="Tu red de apoyo está cuidando tus pasos." FontSize="14" TextColor="#7663B5" HorizontalOptions="Center" />
+                <!-- MENSAJE DE BIENVENIDA -->
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label x:Name="GreetingLabel" Text="Hola, Melissa 💜" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                    <Label Text="Tu red de apoyo está cuidando tus pasos." FontSize="13" TextColor="#E2D9F3" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- 1. INDICADOR DE ESTADO EN PÍLDORA -->
-                <Border Grid.Row="1" Stroke="#E8E8E8" StrokeThickness="1" StrokeShape="RoundRectangle 20" BackgroundColor="#FFFFFF" Padding="20,12" HorizontalOptions="Center" Margin="0,5,0,10">
+                <!-- INDICADOR DE ESTADO EN PÍLDORA -->
+                <Border Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" BackgroundColor="#FFFFFF" Padding="18,10" HorizontalOptions="Center">
                     <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.05" />
+                        <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.1" />
                     </Border.Shadow>
 
-                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
                         <skia:SKLottieView x:Name="StatusLottie"
                                            Source="shield.json"
                                            RepeatCount="-1"
-                                           HeightRequest="30"
-                                           WidthRequest="30"
+                                           HeightRequest="24"
+                                           WidthRequest="24"
                                            VerticalOptions="Center" />
 
-                        <Label x:Name="StatusLabel" Text="Sistema Listo y Seguro" FontSize="14" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#2E7D32" VerticalOptions="Center" />
+                        <Label x:Name="StatusLabel" Text="Sistema Listo y Seguro" FontSize="13" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#2E7D32" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </Border>
+            </VerticalStackLayout>
 
-                <!-- 2. EL PROTAGONISTA: BOTÓN S.O.S -->
-                <Grid Grid.Row="2" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="340" HeightRequest="340">
+            <!-- ── 2. TARJETA BLANCA FLOTANTE CON EL S.O.S. Y EL MAPA ───── -->
+            <Border Grid.Row="1"
+                    BackgroundColor="{StaticResource PulsoFondo}"
+                    Stroke="Transparent"
+                    StrokeShape="RoundRectangle 30,30,0,0"
+                    Padding="0">
 
-                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 160" BackgroundColor="#FFFFFF" WidthRequest="320" HeightRequest="320" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,10" Radius="20" Opacity="0.05" />
-                        </Border.Shadow>
-                    </Border>
-                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 130" BackgroundColor="#FAFAFA" WidthRequest="260" HeightRequest="260" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Border.Shadow>
-                            <Shadow Brush="Black" Offset="0,5" Radius="15" Opacity="0.08" />
-                        </Border.Shadow>
-                    </Border>
+                <ScrollView>
+                    <Grid Padding="20,25,20,40" RowDefinitions="Auto, Auto, *" RowSpacing="20">
 
-                    <Border StrokeThickness="0" StrokeShape="RoundRectangle 105" BackgroundColor="Transparent" WidthRequest="210" HeightRequest="210" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Border.Shadow>
-                            <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,0" Radius="40" Opacity="0.3" />
-                        </Border.Shadow>
-                    </Border>
+                        <!-- EL PROTAGONISTA: BOTÓN S.O.S -->
+                        <Grid Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="340" HeightRequest="340">
 
-                    <Button x:Name="PanicButton" 
-                            Text="S.O.S" 
-                            FontSize="42" 
-                            Padding="0"
-                            FontFamily="PoppinsBold"
-                            FontAttributes="Bold" 
-                            TextColor="White" 
-                            CornerRadius="100" 
-                            WidthRequest="200" 
-                            HeightRequest="200" 
-                            HorizontalOptions="Center" 
-                            VerticalOptions="Center"
-                            Pressed="OnPanicButtonPressed" 
-                            Released="OnPanicButtonReleased">
-                        <Button.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#FF5252" Offset="0.0" />
-                                <GradientStop Color="{StaticResource PulsoAlertaRoja}" Offset="1.0" />
-                            </LinearGradientBrush>
-                        </Button.Background>
-                        <Button.Shadow>
-                            <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,8" Radius="20" Opacity="0.4" />
-                        </Button.Shadow>
-                    </Button>
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 160" BackgroundColor="#FFFFFF" WidthRequest="320" HeightRequest="320" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,10" Radius="20" Opacity="0.05" />
+                                </Border.Shadow>
+                            </Border>
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 130" BackgroundColor="#FAFAFA" WidthRequest="260" HeightRequest="260" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Shadow>
+                                    <Shadow Brush="Black" Offset="0,5" Radius="15" Opacity="0.08" />
+                                </Border.Shadow>
+                            </Border>
 
-                    <ProgressBar x:Name="HoldProgressBar" 
-                                 Progress="0" 
-                                 ProgressColor="{StaticResource PulsoAlertaRoja}" 
-                                 BackgroundColor="#E0E0E0" 
-                                 HeightRequest="6" 
-                                 WidthRequest="130" 
-                                 HorizontalOptions="Center" 
-                                 VerticalOptions="End" 
-                                 Margin="0,0,0,25"
-                                 Opacity="0" />
-                </Grid>
+                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 105" BackgroundColor="Transparent" WidthRequest="210" HeightRequest="210" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Border.Shadow>
+                                    <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,0" Radius="40" Opacity="0.3" />
+                                </Border.Shadow>
+                            </Border>
 
-                <!-- 3. BOTÓN DE 'ESTOY A SALVO' -->
-                <Button x:Name="SafetyButton" 
-                        Grid.Row="3"
-                        Text="✅ Estoy a Salvo" 
-                        Clicked="OnSafetyButtonClicked" 
-                        TextColor="White" 
-                        IsVisible="False" 
-                        HeightRequest="65" 
-                        CornerRadius="32" 
-                        WidthRequest="280" 
-                        HorizontalOptions="Center" 
-                        VerticalOptions="Center" 
-                        FontFamily="PoppinsBold"
-                        FontAttributes="Bold" 
-                        FontSize="18"
-                        BorderColor="#2E7D32"
-                        BorderWidth="1">
-                    <Button.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#4CAF50" Offset="0.0" />
-                            <GradientStop Color="#2E7D32" Offset="1.0" />
-                        </LinearGradientBrush>
-                    </Button.Background>
-                    <Button.Shadow>
-                        <Shadow Brush="#4CAF50" Offset="0,10" Radius="20" Opacity="0.5" />
-                    </Button.Shadow>
-                </Button>
+                            <Button x:Name="PanicButton" 
+                                    Text="S.O.S" 
+                                    FontSize="42" 
+                                    Padding="0"
+                                    FontFamily="PoppinsBold"
+                                    FontAttributes="Bold" 
+                                    TextColor="White" 
+                                    CornerRadius="100" 
+                                    WidthRequest="200" 
+                                    HeightRequest="200" 
+                                    HorizontalOptions="Center" 
+                                    VerticalOptions="Center"
+                                    Pressed="OnPanicButtonPressed" 
+                                    Released="OnPanicButtonReleased">
+                                <Button.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#FF5252" Offset="0.0" />
+                                        <GradientStop Color="{StaticResource PulsoAlertaRoja}" Offset="1.0" />
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Shadow>
+                                    <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,8" Radius="20" Opacity="0.4" />
+                                </Button.Shadow>
+                            </Button>
 
-                <!-- 4. MAPA TIPO WIDGET IOS -->
-                <Border Grid.Row="4" StrokeThickness="0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 25" HeightRequest="220" Margin="0,5,0,0">
-                    <Border.Shadow>
-                        <Shadow Brush="Black" Offset="0,8" Radius="20" Opacity="0.1" />
-                    </Border.Shadow>
+                            <ProgressBar x:Name="HoldProgressBar" 
+                                         Progress="0" 
+                                         ProgressColor="{StaticResource PulsoAlertaRoja}" 
+                                         BackgroundColor="#E0E0E0" 
+                                         HeightRequest="6" 
+                                         WidthRequest="130" 
+                                         HorizontalOptions="Center" 
+                                         VerticalOptions="End" 
+                                         Margin="0,0,0,25"
+                                         Opacity="0" />
+                        </Grid>
 
-                    <Grid>
-                        <ContentView IsClippedToBounds="True">
-                            <maps:Map x:Name="UserMap" IsShowingUser="True" MapType="Street" Margin="0" />
-                        </ContentView>
+                        <!-- BOTÓN DE 'ESTOY A SALVO' -->
+                        <Button x:Name="SafetyButton" 
+                                Grid.Row="1"
+                                Text="✅ Estoy a Salvo" 
+                                Clicked="OnSafetyButtonClicked" 
+                                TextColor="White" 
+                                IsVisible="False" 
+                                HeightRequest="65" 
+                                CornerRadius="32" 
+                                WidthRequest="280" 
+                                HorizontalOptions="Center" 
+                                VerticalOptions="Center" 
+                                FontFamily="PoppinsBold"
+                                FontAttributes="Bold" 
+                                FontSize="18"
+                                BorderColor="#2E7D32"
+                                BorderWidth="1">
+                            <Button.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#4CAF50" Offset="0.0" />
+                                    <GradientStop Color="#2E7D32" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                            <Button.Shadow>
+                                <Shadow Brush="#4CAF50" Offset="0,10" Radius="20" Opacity="0.5" />
+                            </Button.Shadow>
+                        </Button>
 
-                        <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="15,15,0,0" BackgroundColor="#E6FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10,6">
-                            <HorizontalStackLayout Spacing="6">
-                                <Label Text="📍" FontSize="12" VerticalOptions="Center" />
-                                <Label Text="Ubicación en Tiempo Real" TextColor="{StaticResource PulsoMoradoProfundo}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="11" VerticalOptions="Center" />
-                            </HorizontalStackLayout>
+                        <!-- MAPA TIPO WIDGET IOS -->
+                        <Border Grid.Row="2" StrokeThickness="0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 25" HeightRequest="220" Margin="0,5,0,0">
+                            <Border.Shadow>
+                                <Shadow Brush="Black" Offset="0,8" Radius="20" Opacity="0.1" />
+                            </Border.Shadow>
+
+                            <Grid>
+                                <ContentView IsClippedToBounds="True">
+                                    <maps:Map x:Name="UserMap" IsShowingUser="True" MapType="Street" Margin="0" />
+                                </ContentView>
+
+                                <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="15,15,0,0" BackgroundColor="#E6FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10,6">
+                                    <HorizontalStackLayout Spacing="6">
+                                        <Label Text="📍" FontSize="12" VerticalOptions="Center" />
+                                        <Label Text="Ubicación en Tiempo Real" TextColor="{StaticResource PulsoMoradoProfundo}" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="11" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </Border>
+                            </Grid>
                         </Border>
                     </Grid>
-                </Border>
-            </Grid>
-        </ScrollView>
+                </ScrollView>
+            </Border>
+        </Grid>
 
-        <!-- ==============================  💜 OVERLAY DE ALERTA PERSONALIZADA  ============================== -->
+        <!-- ── 💜 OVERLAY DE ALERTA PERSONALIZADA ───────────────────────── -->
         <Grid x:Name="CustomAlertOverlay" 
               BackgroundColor="#99000000" 
               IsVisible="False" 
