@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafetyAppMobile.VerifyCodePage"
+             BackgroundColor="#5F42CA"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ── CABECERA MORADA ──────────────────────────────────────── -->
+        <VerticalStackLayout Grid.Row="0" Padding="25,40,25,30" Spacing="12">
+
+            <HorizontalStackLayout>
+                <Border WidthRequest="40" HeightRequest="40" BackgroundColor="#7458D4" Stroke="Transparent" Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="‹" TextColor="White" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-3,2,0"/>
+                </Border>
+            </HorizontalStackLayout>
+
+            <VerticalStackLayout Spacing="3">
+                <Label Text="Código de Seguridad" FontFamily="PoppinsBold" FontSize="28" FontAttributes="Bold" TextColor="White" CharacterSpacing="-0.5"/>
+                <Label x:Name="SubtitleLabel" Text="Ingresa los 6 dígitos que enviamos a tu correo." FontFamily="PoppinsRegular" FontSize="14" TextColor="#E2D9F3" LineHeight="1.4"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- ── TARJETA BLANCA FLOTANTE ────────────────────────────── -->
+        <Border Grid.Row="1" BackgroundColor="#F6F3FB" Stroke="Transparent" StrokeShape="RoundRectangle 30,30,0,0" Padding="0">
+            <VerticalStackLayout Padding="22,40,22,40" Spacing="25" HorizontalOptions="Center">
+
+                <!-- Icono ilustrativo -->
+                <Border BackgroundColor="#F0EDF9" Stroke="Transparent" StrokeShape="RoundRectangle 40" HeightRequest="80" WidthRequest="80" HorizontalOptions="Center">
+                    <Label Text="✉️" FontSize="36" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+
+                <!-- Input del Código -->
+                <VerticalStackLayout Spacing="8" HorizontalOptions="Center">
+                    <Label Text="CÓDIGO DE 6 DÍGITOS" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5" HorizontalOptions="Center"/>
+
+                    <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="2" StrokeShape="RoundRectangle 16" WidthRequest="220" HeightRequest="65">
+                        <Entry x:Name="CodeEntry"
+                               Placeholder="000000"
+                               PlaceholderColor="#B3A8D4"
+                               TextColor="#4B2E83"
+                               FontFamily="PoppinsBold"
+                               FontAttributes="Bold"
+                               FontSize="28"
+                               MaxLength="6"
+                               Keyboard="Numeric"
+                               HorizontalTextAlignment="Center"
+                               VerticalOptions="Center"
+                               CharacterSpacing="6"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Botón de Confirmar -->
+                <Button x:Name="VerifyBtn"
+                        Text="Verificar Código" 
+                        Clicked="OnVerifyClicked"
+                        BackgroundColor="#5F42CA" 
+                        TextColor="White" 
+                        FontSize="16"
+                        FontFamily="PoppinsBold"
+                        FontAttributes="Bold"
+                        CornerRadius="25"
+                        HeightRequest="55"
+                        WidthRequest="280"
+                        Margin="0,15,0,0">
+                    <Button.Shadow>
+                        <Shadow Brush="#5F42CA" Opacity="0.3" Offset="0,6" Radius="10"/>
+                    </Button.Shadow>
+                </Button>
+
+                <!-- Feedback de error -->
+                <Label x:Name="ErrorLabel" Text="" TextColor="#E5484D" FontFamily="PoppinsBold" FontSize="13" HorizontalOptions="Center" IsVisible="False"/>
+
+                <!-- Reenviar correo -->
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,10,0,0">
+                    <Label Text="¿No recibiste el código?" TextColor="#6F6680" FontFamily="PoppinsRegular" FontSize="13" VerticalOptions="Center"/>
+                    <Label Text="Reenviar" TextColor="#5F42CA" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="13" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnResendCodeTapped"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+</ContentPage>

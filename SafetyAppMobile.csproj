@@ -61,29 +61,38 @@
     </ItemGroup>
 
     <ItemGroup>
-        <MauiXaml Update="AddContactPage.xaml">
+        <MauiXaml Update="Views\AddContactPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="ContactPage.xaml">
+        <MauiXaml Update="Views\ContactPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="DashboardPage.xaml">
+        <MauiXaml Update="Views\DashboardPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="EditContactPage.xaml">
+        <MauiXaml Update="Views\EditContactPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="LoginPage.xaml">
+        <MauiXaml Update="Views\ForgotPasswordPage.xaml">
+          <Generator>MSBuild:Compile</Generator>
+        </MauiXaml>
+        <MauiXaml Update="Views\LoginPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="ProfilePage.xaml">
+        <MauiXaml Update="Views\NewPasswordPage.xaml">
+          <Generator>MSBuild:Compile</Generator>
+        </MauiXaml>
+        <MauiXaml Update="Views\ProfilePage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="OnboardingPage.xaml">
+        <MauiXaml Update="Views\OnboardingPage.xaml">
             <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
-        <MauiXaml Update="RegisterPage.xaml">
+        <MauiXaml Update="Views\RegisterPage.xaml">
             <Generator>MSBuild:Compile</Generator>
+        </MauiXaml>
+        <MauiXaml Update="Views\VerifyCodePage.xaml">
+          <Generator>MSBuild:Compile</Generator>
         </MauiXaml>
     </ItemGroup>
 
@@ -92,7 +101,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Update="ProfilePage.xaml.cs">
+        <Compile Update="Views\ProfilePage.xaml.cs">
             <DependentUpon>ProfilePage.xaml</DependentUpon>
         </Compile>
     </ItemGroup>

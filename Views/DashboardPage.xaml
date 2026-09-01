@@ -111,32 +111,33 @@
                                          Margin="0,0,0,25"
                                          Opacity="0" />
                         </Grid>
-
-                        <!-- BOTÓN DE 'ESTOY A SALVO' -->
+                        <!-- BOTÓN DE 'ESTOY A SALVO' MEJORADO -->
                         <Button x:Name="SafetyButton" 
-                                Grid.Row="1"
-                                Text="✅ Estoy a Salvo" 
-                                Clicked="OnSafetyButtonClicked" 
-                                TextColor="White" 
-                                IsVisible="False" 
-                                HeightRequest="65" 
-                                CornerRadius="32" 
-                                WidthRequest="280" 
-                                HorizontalOptions="Center" 
-                                VerticalOptions="Center" 
-                                FontFamily="PoppinsBold"
-                                FontAttributes="Bold" 
-                                FontSize="18"
-                                BorderColor="#2E7D32"
-                                BorderWidth="1">
+        Grid.Row="1"
+        Text="ESTOY A SALVO" 
+        Clicked="OnSafetyButtonClicked" 
+        TextColor="White" 
+        IsVisible="False" 
+        HeightRequest="60" 
+        CornerRadius="30" 
+        WidthRequest="260" 
+        HorizontalOptions="Center" 
+        VerticalOptions="Center" 
+        FontFamily="PoppinsBold"
+        FontAttributes="Bold" 
+        FontSize="15"
+        CharacterSpacing="1"
+        BorderWidth="0">
                             <Button.Background>
+                                <!-- Gradiente Esmeralda Moderno -->
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#4CAF50" Offset="0.0" />
-                                    <GradientStop Color="#2E7D32" Offset="1.0" />
+                                    <GradientStop Color="#10B981" Offset="0.0" />
+                                    <GradientStop Color="#047857" Offset="1.0" />
                                 </LinearGradientBrush>
                             </Button.Background>
                             <Button.Shadow>
-                                <Shadow Brush="#4CAF50" Offset="0,10" Radius="20" Opacity="0.5" />
+                                <!-- Sombra más suave y elegante -->
+                                <Shadow Brush="#047857" Offset="0,8" Radius="15" Opacity="0.35" />
                             </Button.Shadow>
                         </Button>
 

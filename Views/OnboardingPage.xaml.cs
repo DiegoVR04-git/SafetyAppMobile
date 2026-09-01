@@ -123,8 +123,8 @@ public partial class OnboardingPage : ContentPage
                 NextButton.Text = "Configurando...";
                 NextButton.IsEnabled = false;
 
-                // 1. Guardar email en preferencias locales
-                Preferences.Default.Set("UserEmail", _userEmail);
+                // 1. Guardar el SOS Email en preferencias locales correctamente
+                Preferences.Default.Set("SosEmail", _userEmail);
 
                 // 2. ACTUALIZACIÓN A LA BASE DE DATOS PARA QUITAR EL NULL
                 try
@@ -132,12 +132,15 @@ public partial class OnboardingPage : ContentPage
                     int userId = Preferences.Default.Get("current_user_id", 0);
                     string nombreGuardado = Preferences.Default.Get("UserFullName", "");
                     string telefonoGuardado = Preferences.Default.Get("UserPhone", "");
+                    string correoPersonal = Preferences.Default.Get("UserEmail", ""); // Recuperamos el que puso en el Registro
 
+                    // SOLUCIÓN 2: Enviamos ambos correos para cumplir con el modelo de FastAPI
                     var updateData = new
                     {
                         full_name = nombreGuardado,
                         phone_number = telefonoGuardado,
-                        email = _userEmail
+                        email = correoPersonal,     // El personal
+                        sos_email = _userEmail      // El de emergencia que acaba de escribir en el Onboarding
                     };
 
                     var json = JsonSerializer.Serialize(updateData);
@@ -148,9 +151,8 @@ public partial class OnboardingPage : ContentPage
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        // 🚨 TRAMPA DE ERROR ACTIVADA 🚨
                         string errorBody = await response.Content.ReadAsStringAsync();
-                        await DisplayAlert("Error del Servidor", $"Código: {response.StatusCode}\n\nDetalle: {errorBody}\n\nDatos enviados:\nID: {userId}\nNom: {nombreGuardado}\nTel: {telefonoGuardado}", "OK");
+                        await DisplayAlert("Error del Servidor", $"Código: {response.StatusCode}\n\nDetalle: {errorBody}", "OK");
                     }
                 }
                 catch (Exception ex)
@@ -162,6 +164,7 @@ public partial class OnboardingPage : ContentPage
                 int userIdForOnboarding = Preferences.Default.Get("current_user_id", 0);
                 string onboardingKey = $"IsFirstLaunch_User_{userIdForOnboarding}";
                 Preferences.Default.Set(onboardingKey, false);
+
 
                 NextButton.Text = "Comenzar";
                 NextButton.IsEnabled = true;

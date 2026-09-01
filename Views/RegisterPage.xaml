@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="SafetyAppMobile.RegisterPage"
+             BackgroundColor="#5F42CA"
+             Shell.NavBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto,*">
+
+        <!-- ── CABECERA MORADA ──────────────────────────────────────── -->
+        <VerticalStackLayout Grid.Row="0" Padding="25,40,25,30" Spacing="12">
+            <HorizontalStackLayout>
+                <Border WidthRequest="40" HeightRequest="40" BackgroundColor="#7458D4" Stroke="Transparent" Padding="0">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="12"/>
+                    </Border.StrokeShape>
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnBackToLoginTapped"/>
+                    </Border.GestureRecognizers>
+                    <Label Text="‹" TextColor="White" FontSize="30" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-3,2,0"/>
+                </Border>
+            </HorizontalStackLayout>
+
+            <VerticalStackLayout Spacing="3">
+                <Label Text="Crear Cuenta" FontFamily="PoppinsBold" FontSize="28" FontAttributes="Bold" TextColor="White" CharacterSpacing="-0.5"/>
+                <Label Text="Únete a Pulso Violeta y mantente segura." FontFamily="PoppinsRegular" FontSize="14" TextColor="#E2D9F3" LineHeight="1.4"/>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+
+        <!-- ── TARJETA BLANCA FLOTANTE ────────────────────────────── -->
+        <Border Grid.Row="1" BackgroundColor="#F6F3FB" Stroke="Transparent" StrokeShape="RoundRectangle 30,30,0,0" Padding="0">
+            <ScrollView>
+                <VerticalStackLayout Padding="22,35,22,40" Spacing="20">
+
+                    <!-- NOMBRE -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="NOMBRE COMPLETO" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5"/>
+                        <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15,4">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 20" HeightRequest="36" WidthRequest="36" VerticalOptions="Center">
+                                    <Label Text="👤" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="NameEntry" Grid.Column="1" Placeholder="Ej. Melissa" PlaceholderColor="#B3A8D4" TextColor="#2D2440" FontFamily="PoppinsRegular" FontSize="15" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- EMAIL -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="CORREO ELECTRÓNICO" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5"/>
+                        <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15,4">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 20" HeightRequest="36" WidthRequest="36" VerticalOptions="Center">
+                                    <Label Text="✉️" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="EmailEntry" Grid.Column="1" Placeholder="tu@correo.com" Keyboard="Email" PlaceholderColor="#B3A8D4" TextColor="#2D2440" FontFamily="PoppinsRegular" FontSize="15" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- TELÉFONO -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="TELÉFONO" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5"/>
+                        <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15,4">
+                            <Grid ColumnDefinitions="Auto, 85, Auto, *" ColumnSpacing="8" VerticalOptions="Center">
+                                <Border Grid.Column="0" BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 20" HeightRequest="36" WidthRequest="36" VerticalOptions="Center">
+                                    <Label Text="📞" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+
+                                <!-- 🟣 NUEVO SELECTOR DE PAÍS (Sin Picker Nativo) -->
+                                <Grid Grid.Column="1" HeightRequest="38" VerticalOptions="Center">
+                                    <Border BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 12" Padding="4,0">
+                                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                                            <Label x:Name="SelectedCountryCodeLabel" 
+                                                   Text="+52" 
+                                                   TextColor="#4B2E83"
+                                                   FontFamily="PoppinsBold"
+                                                   FontSize="14"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center" />
+                                            <Label Grid.Column="1" Text="▼" FontSize="10" TextColor="#7663B5" VerticalOptions="Center" Margin="0,0,4,0"/>
+                                        </Grid>
+                                    </Border>
+                                    <Button BackgroundColor="Transparent" Clicked="OnOpenCountryCodeTapped" />
+                                </Grid>
+
+                                <BoxView Grid.Column="2" WidthRequest="1" Color="#E8E5F3" Margin="0,6"/>
+                                <Entry x:Name="PhoneEntry" Grid.Column="3" Placeholder="5512345678" MaxLength="10" Keyboard="Telephone" PlaceholderColor="#B3A8D4" TextColor="#2D2440" FontFamily="PoppinsRegular" FontSize="15" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- CONTRASEÑA -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="CONTRASEÑA SEGURA" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5"/>
+                        <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15,4">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 20" HeightRequest="36" WidthRequest="36" VerticalOptions="Center">
+                                    <Label Text="🔒" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="PasswordEntry" Grid.Column="1" Placeholder="Mínimo 8 caracteres" IsPassword="True" PlaceholderColor="#B3A8D4" TextColor="#2D2440" FontFamily="PoppinsRegular" FontSize="15" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- CONFIRMAR CONTRASEÑA -->
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="CONFIRMAR CONTRASEÑA" TextColor="#7663B5" FontFamily="PoppinsBold" FontSize="11" CharacterSpacing="0.5"/>
+                        <Border BackgroundColor="White" Stroke="#E8E5F3" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15,4">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                                <Border Grid.Column="0" BackgroundColor="#F4EEFF" Stroke="Transparent" StrokeShape="RoundRectangle 20" HeightRequest="36" WidthRequest="36" VerticalOptions="Center">
+                                    <Label Text="🔒" FontSize="15" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <Entry x:Name="ConfirmPasswordEntry" Grid.Column="1" Placeholder="Repite tu contraseña" IsPassword="True" PlaceholderColor="#B3A8D4" TextColor="#2D2440" FontFamily="PoppinsRegular" FontSize="15" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- BOTÓN REGISTRO -->
+                    <Button x:Name="RegisterBtn" Text="Unirse a la Red Segura" Clicked="OnRegisterClicked" BackgroundColor="#5F42CA" TextColor="White" FontSize="16" FontFamily="PoppinsBold" FontAttributes="Bold" CornerRadius="25" HeightRequest="55" Margin="0,10,0,0">
+                        <Button.Shadow>
+                            <Shadow Brush="#5F42CA" Opacity="0.3" Offset="0,6" Radius="10"/>
+                        </Button.Shadow>
+                    </Button>
+
+                    <Label x:Name="StatusLabel" Text="" TextColor="#E5484D" FontFamily="PoppinsBold" FontSize="13" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+
+                    <HorizontalStackLayout HorizontalOptions="Center" Spacing="5" Margin="0,0,0,20">
+                        <Label Text="¿Ya tienes cuenta?" TextColor="#6F6680" FontFamily="PoppinsRegular" FontSize="13" VerticalOptions="Center"/>
+                        <Label Text="Inicia sesión" TextColor="#5F42CA" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="13" VerticalOptions="Center">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnBackToLoginTapped"/>
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- 🟣 MODAL 1: OVERLAY FLOTANTE PARA SELECCIONAR PAÍS -->
+        <Grid x:Name="CountryCodeOverlay" 
+              Grid.RowSpan="2"
+              BackgroundColor="#99000000" 
+              IsVisible="False" 
+              ZIndex="100">
+            <Border BackgroundColor="White" 
+                    Stroke="#37246B" 
+                    StrokeThickness="1" 
+                    StrokeShape="RoundRectangle 20" 
+                    HorizontalOptions="Center" 
+                    VerticalOptions="Center" 
+                    WidthRequest="260" 
+                    Padding="25">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="País / Región" TextColor="#37246B" FontFamily="PoppinsBold" FontSize="18" HorizontalOptions="Center" Margin="0,0,0,10"/>
+
+                    <Button Text="🇲🇽 +52 (México)" BackgroundColor="#F4EEFF" TextColor="#37246B" FontFamily="PoppinsBold" CornerRadius="12" HeightRequest="50" Clicked="OnCountrySelected"/>
+                    <Button Text="🇨🇦 +1 (Canadá / US)" BackgroundColor="#F4EEFF" TextColor="#37246B" FontFamily="PoppinsBold" CornerRadius="12" HeightRequest="50" Clicked="OnCountrySelected"/>
+
+                    <Button Text="Cancelar" BackgroundColor="Transparent" TextColor="#7663B5" FontFamily="PoppinsRegular" Clicked="OnCloseCountryCodeOverlay" Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <!-- 🟣 MODAL 2: OVERLAY FLOTANTE PARA VERIFICAR CORREO -->
+        <Grid x:Name="VerificationOverlay" 
+              Grid.RowSpan="2"
+              BackgroundColor="#99000000" 
+              IsVisible="False" 
+              ZIndex="100">
+
+            <Border BackgroundColor="White"
+                    Stroke="#37246B"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 25"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    WidthRequest="320"
+                    Padding="25">
+
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="🔐" FontSize="40" HorizontalOptions="Center" />
+                    <Label Text="Verifica tu Correo" 
+                           TextColor="#37246B" 
+                           FontFamily="PoppinsBold" 
+                           FontSize="20" 
+                           HorizontalOptions="Center" />
+
+                    <Label x:Name="OverlayInstructionLabel"
+                           Text="Ingresa el código de 6 dígitos que enviamos a tu correo." 
+                           TextColor="#7663B5" 
+                           FontFamily="PoppinsRegular"
+                           FontSize="13" 
+                           HorizontalTextAlignment="Center" />
+
+                    <!-- Campo para escribir el código -->
+                    <Border Stroke="#7663B5" StrokeThickness="1" StrokeShape="RoundRectangle 12" BackgroundColor="#FAFAFA" Padding="10,0">
+                        <Entry x:Name="VerificationCodeEntry"
+                               Placeholder="123456"
+                               MaxLength="6"
+                               Keyboard="Numeric"
+                               FontSize="22"
+                               FontFamily="PoppinsBold"
+                               HorizontalTextAlignment="Center"
+                               TextColor="#37246B" />
+                    </Border>
+
+                    <!-- 🔴 ETIQUETA DE ERROR DENTRO DEL MODAL -->
+                    <Label x:Name="OverlayErrorLabel"
+                           Text=""
+                           TextColor="#E5484D"
+                           FontFamily="PoppinsBold"
+                           FontSize="12"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"
+                           IsVisible="False" />
+
+                    <!-- Botones de Acción -->
+                    <VerticalStackLayout Spacing="10" Margin="0,5,0,0">
+                        <Button x:Name="VerifyBtn"
+                                Text="Verificar y Crear" 
+                                BackgroundColor="#5F42CA" 
+                                TextColor="White" 
+                                CornerRadius="12"
+                                FontFamily="PoppinsBold"
+                                Clicked="OnConfirmVerificationClicked" />
+
+                        <Button Text="Cancelar" 
+                                BackgroundColor="Transparent" 
+                                TextColor="#7663B5"
+                                FontFamily="PoppinsRegular"
+                                Clicked="OnCancelVerificationClicked" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+    </Grid>
+</ContentPage>

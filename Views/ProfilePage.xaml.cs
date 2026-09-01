@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text;
+using Microsoft.Maui.Storage;
 
 namespace SafetyAppMobile;
 
@@ -23,50 +24,95 @@ public partial class ProfilePage : ContentPage
     private void CargarDatosDelPerfil()
     {
         string nombreGuardado = Preferences.Default.Get("UserFullName", "");
-        string correoGuardado = Preferences.Default.Get("UserEmail", "");
+        string correoPersonalGuardado = Preferences.Default.Get("UserEmail", "");
+        string correoSosGuardado = Preferences.Default.Get("SosEmail", "");
         string telefonoGuardado = Preferences.Default.Get("UserPhone", "");
 
         // 1. Asignar los datos actuales como Placeholders
         NameEntry.Placeholder = string.IsNullOrEmpty(nombreGuardado) ? "Tu nombre" : nombreGuardado;
-        EmailEntry.Placeholder = string.IsNullOrEmpty(correoGuardado) ? "ejemplo@correo.com" : correoGuardado;
+        PersonalEmailEntry.Placeholder = string.IsNullOrEmpty(correoPersonalGuardado) ? "tu@correo.com" : correoPersonalGuardado;
+        SosEmailEntry.Placeholder = string.IsNullOrEmpty(correoSosGuardado) ? "emergencia@correo.com" : correoSosGuardado;
 
-        // 2. Extraer la lada (+52 o +1) y asignar el número al Placeholder
+        // Actualizar la inicial y el nombre del Header
+        if (!string.IsNullOrEmpty(nombreGuardado))
+        {
+            HeaderNameLabel.Text = nombreGuardado.Split(' ')[0];
+            AvatarInitialLabel.Text = nombreGuardado.Substring(0, 1).ToUpper();
+        }
+
+        // 2. Extraer la lada (+52 o +1) hacia el Label personalizado
         if (telefonoGuardado.StartsWith("+52"))
         {
-            CountryCodePicker.SelectedIndex = 0; // Selecciona +52
-            PhoneEntry.Placeholder = telefonoGuardado.Substring(3); // Quita los primeros 3 caracteres
+            SelectedCountryCodeLabel.Text = "+52";
+            PhoneEntry.Placeholder = telefonoGuardado.Substring(3);
         }
         else if (telefonoGuardado.StartsWith("+1"))
         {
-            CountryCodePicker.SelectedIndex = 1; // Selecciona +1
-            PhoneEntry.Placeholder = telefonoGuardado.Substring(2); // Quita los primeros 2 caracteres
+            SelectedCountryCodeLabel.Text = "+1";
+            PhoneEntry.Placeholder = telefonoGuardado.Substring(2);
         }
         else
         {
-            CountryCodePicker.SelectedIndex = 0;
+            SelectedCountryCodeLabel.Text = "+52";
             PhoneEntry.Placeholder = string.IsNullOrEmpty(telefonoGuardado) ? "A 10 dígitos" : telefonoGuardado;
         }
     }
 
+    // ==========================================
+    // LÓGICA DEL SELECTOR DE PAÍS
+    // ==========================================
+    private async void OnOpenCountryCodeTapped(object sender, EventArgs e)
+    {
+        CountryCodeOverlay.IsVisible = true;
+        CountryCodeOverlay.Opacity = 0;
+        await CountryCodeOverlay.FadeTo(1, 200);
+    }
+
+    private async void OnCloseCountryCodeOverlay(object sender, EventArgs e)
+    {
+        await CountryCodeOverlay.FadeTo(0, 200);
+        CountryCodeOverlay.IsVisible = false;
+    }
+
+    private void OnCountrySelected(object sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            if (btn.Text.Contains("+52"))
+            {
+                SelectedCountryCodeLabel.Text = "+52";
+            }
+            else if (btn.Text.Contains("+1"))
+            {
+                SelectedCountryCodeLabel.Text = "+1";
+            }
+        }
+
+        OnCloseCountryCodeOverlay(null, null);
+    }
+
+    // ==========================================
+    // LÓGICA DE GUARDAR Y CERRAR SESIÓN
+    // ==========================================
     private async void OnSaveClicked(object sender, EventArgs e)
     {
-        // Si el usuario no escribió nada nuevo (el campo está vacío), rescatamos el dato actual desde Preferences
+        // Rescatamos los datos actuales desde Preferences
         string nombreActual = Preferences.Default.Get("UserFullName", "");
-        string correoActual = Preferences.Default.Get("UserEmail", "");
+        string correoPersonalActual = Preferences.Default.Get("UserEmail", "");
+        string correoSosActual = Preferences.Default.Get("SosEmail", "");
         string telActual = Preferences.Default.Get("UserPhone", "");
 
         string nuevoNombre = string.IsNullOrWhiteSpace(NameEntry.Text) ? nombreActual : NameEntry.Text.Trim();
-        string nuevoCorreo = string.IsNullOrWhiteSpace(EmailEntry.Text) ? correoActual : EmailEntry.Text.Trim();
+        string nuevoCorreoPersonal = string.IsNullOrWhiteSpace(PersonalEmailEntry.Text) ? correoPersonalActual : PersonalEmailEntry.Text.Trim();
+        string nuevoCorreoSos = string.IsNullOrWhiteSpace(SosEmailEntry.Text) ? correoSosActual : SosEmailEntry.Text.Trim();
 
-        // Armar el nuevo teléfono verificando si el usuario escribió algo
-        string ladaSeleccionada = CountryCodePicker.SelectedItem?.ToString() ?? "+52";
+        // Extraemos la lada seleccionada desde el Label
+        string ladaSeleccionada = SelectedCountryCodeLabel.Text ?? "+52";
         string numeroRaw = string.IsNullOrWhiteSpace(PhoneEntry.Text) ? "" : PhoneEntry.Text.Trim();
 
         string nuevoTelefono;
         if (string.IsNullOrEmpty(numeroRaw))
         {
-            // Si no escribió un número nuevo, asumimos que quiere conservar el actual,
-            // PERO tomamos en cuenta si cambió la lada en el Picker
             string numeroViejo = telActual.StartsWith("+52") ? telActual.Substring(3) :
                                  telActual.StartsWith("+1") ? telActual.Substring(2) : telActual;
             nuevoTelefono = ladaSeleccionada + numeroViejo;
@@ -76,26 +122,35 @@ public partial class ProfilePage : ContentPage
             nuevoTelefono = ladaSeleccionada + numeroRaw;
         }
 
+        // Validaciones
         if (string.IsNullOrWhiteSpace(nuevoNombre) || string.IsNullOrWhiteSpace(nuevoTelefono))
         {
-            await DisplayAlert("Error", "Nombre y teléfono no pueden quedar vacíos.", "OK");
+            await DisplayAlert("Error", "El nombre y teléfono no pueden quedar vacíos.", "OK");
             return;
         }
 
-        if (!IsValidEmail(nuevoCorreo))
+        if (!IsValidEmail(nuevoCorreoPersonal))
         {
-            await DisplayAlert("Error", "Ingresa un correo electrónico válido.", "OK");
+            await DisplayAlert("Error", "Ingresa un correo personal válido.", "OK");
+            return;
+        }
+
+        if (!string.IsNullOrWhiteSpace(nuevoCorreoSos) && !IsValidEmail(nuevoCorreoSos))
+        {
+            await DisplayAlert("Error", "Ingresa un correo S.O.S válido.", "OK");
             return;
         }
 
         SaveBtn.Text = "Guardando...";
         SaveBtn.IsEnabled = false;
 
+        // Construimos el Payload JSON conectando con el modelo de FastAPI
         var updateData = new
         {
             full_name = nuevoNombre,
             phone_number = nuevoTelefono,
-            email = nuevoCorreo
+            email = nuevoCorreoPersonal,
+            sos_email = nuevoCorreoSos
         };
 
         var json = JsonSerializer.Serialize(updateData);
@@ -108,22 +163,25 @@ public partial class ProfilePage : ContentPage
 
             if (response.IsSuccessStatusCode)
             {
+                // Actualizamos las preferencias locales
                 Preferences.Default.Set("UserFullName", nuevoNombre);
-                Preferences.Default.Set("UserEmail", nuevoCorreo);
+                Preferences.Default.Set("UserEmail", nuevoCorreoPersonal);
+                Preferences.Default.Set("SosEmail", nuevoCorreoSos);
                 Preferences.Default.Set("UserPhone", nuevoTelefono);
 
-                // Limpiamos las cajas de texto porque ahora los nuevos datos pasarán a ser los Placeholders
+                // Limpiamos las cajas de texto
                 NameEntry.Text = "";
                 PhoneEntry.Text = "";
-                EmailEntry.Text = "";
+                PersonalEmailEntry.Text = "";
+                SosEmailEntry.Text = "";
 
-                CargarDatosDelPerfil(); // Recargamos para que los Placeholders se actualicen visualmente
+                CargarDatosDelPerfil();
 
                 await DisplayAlert("¡Éxito!", "Tu perfil ha sido actualizado.", "OK");
             }
             else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
             {
-                await DisplayAlert("⚠️ Aviso", "Ese número de teléfono ya está registrado en otra cuenta. Intenta con otro.", "OK");
+                await DisplayAlert("⚠️ Aviso", "Ese número de teléfono o correo ya está registrado en otra cuenta. Intenta con otro.", "OK");
             }
             else
             {
@@ -148,7 +206,6 @@ public partial class ProfilePage : ContentPage
         var emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
         return Regex.IsMatch(email, emailPattern);
     }
-
 
     private async void OnLogoutClicked(object sender, EventArgs e)
     {

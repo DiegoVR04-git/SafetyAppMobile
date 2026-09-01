@@ -9,13 +9,14 @@ public partial class LoginPage : ContentPage
     private const string BaseUrl = "https://safety-app-api.onrender.com";
     private readonly HttpClient _httpClient;
 
-    // Molde para entender la respuesta de tu servidor Python
+    // Molde ACTUALIZADO para entender la respuesta de tu servidor Python
     public class LoginResponse
     {
         public string message { get; set; }
         public int user_id { get; set; }
         public string full_name { get; set; }
         public string email { get; set; }
+        public string sos_email { get; set; } // <-- ¡NUEVO: Agregamos el correo SOS!
     }
 
     public LoginPage()
@@ -65,6 +66,44 @@ public partial class LoginPage : ContentPage
         }
     }
 
+    // ==========================================
+    // MÉTODOS DEL MODAL DE CÓDIGO DE PAÍS
+    // ==========================================
+
+    private async void OnOpenCountryCodeTapped(object sender, EventArgs e)
+    {
+        CountryCodeOverlay.IsVisible = true;
+        CountryCodeOverlay.Opacity = 0;
+        await CountryCodeOverlay.FadeTo(1, 200);
+    }
+
+    private async void OnCloseCountryCodeOverlay(object sender, EventArgs e)
+    {
+        await CountryCodeOverlay.FadeTo(0, 200);
+        CountryCodeOverlay.IsVisible = false;
+    }
+
+    private void OnCountrySelected(object sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            if (btn.Text.Contains("+52"))
+            {
+                SelectedCountryCodeLabel.Text = "+52";
+            }
+            else if (btn.Text.Contains("+1"))
+            {
+                SelectedCountryCodeLabel.Text = "+1";
+            }
+        }
+
+        OnCloseCountryCodeOverlay(null, null);
+    }
+
+    // ==========================================
+    // LÓGICA DE LOGIN
+    // ==========================================
+
     private async void OnLoginClicked(object sender, EventArgs e)
     {
         StatusLabel.Text = "";
@@ -73,8 +112,8 @@ public partial class LoginPage : ContentPage
         var rawPhone = PhoneEntry.Text?.Trim();
         var password = PasswordEntry.Text;
 
-        // 1. Extraer el código seleccionado en el Picker
-        string selectedCode = CountryCodePicker.SelectedItem?.ToString() ?? "+52";
+        // 1. Extraemos el código desde nuestro Label personalizado
+        string selectedCode = SelectedCountryCodeLabel.Text ?? "+52";
 
         // 2. Validar que no haya campos vacíos y que el número tenga 10 dígitos
         if (string.IsNullOrWhiteSpace(rawPhone) || rawPhone.Length < 10 || string.IsNullOrWhiteSpace(password))
@@ -113,21 +152,19 @@ public partial class LoginPage : ContentPage
 
                 int userId = result.user_id;
 
-                // 1. Guardamos el ID del usuario
+                // 1. Guardamos los datos principales
                 Preferences.Default.Set("current_user_id", userId);
-
                 Preferences.Default.Set("UserFullName", result.full_name ?? "");
-
-                // NUEVA LÍNEA: Guardamos el correo en caché para el botón S.O.S.
-                // Usamos "??" por si acaso el servidor no devuelve el correo, para que no crashee
-                Preferences.Default.Set("UserEmail", result.email ?? "anonimo");
-
                 Preferences.Default.Set("UserPhone", fullPhoneNumber);
 
-                // 2. Guardamos si quiere ser recordado
+                // 2. GUARDAMOS AMBOS CORREOS
+                Preferences.Default.Set("UserEmail", result.email ?? "");
+                Preferences.Default.Set("SosEmail", result.sos_email ?? "");
+
+                // 3. Guardamos si quiere ser recordado
                 Preferences.Default.Set("remember_me", RememberMeCheckBox.IsChecked);
 
-                // 3. Verificar si es el primer lanzamiento PARA ESTE USUARIO
+                // 4. Verificar si es el primer lanzamiento PARA ESTE USUARIO
                 string onboardingKey = $"IsFirstLaunch_User_{userId}";
                 bool isFirstLaunch = Preferences.Default.Get(onboardingKey, true);
 
@@ -169,5 +206,10 @@ public partial class LoginPage : ContentPage
     private void OnRegisterTapped(object sender, TappedEventArgs e)
     {
         Application.Current.MainPage = new RegisterPage();
+    }
+
+    private async void OnForgotPasswordTapped(object sender, TappedEventArgs e)
+    {
+        await Navigation.PushModalAsync(new ForgotPasswordPage());
     }
 }

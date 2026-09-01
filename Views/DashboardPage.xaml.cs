@@ -205,12 +205,12 @@ public partial class DashboardPage : ContentPage
                 request?.Dispose();
             }
         }
-        catch (HttpRequestException ex)
+        catch (HttpRequestException)
         {
             await DisplayAlert("❌ Error de Red", "No se pudo conectar con el servidor.", "OK");
             ResetPanicState("Error de conexión", Colors.Red);
         }
-        catch (TaskCanceledException ex)
+        catch (TaskCanceledException)
         {
             await DisplayAlert("⏱️ Timeout", "La petición tardó demasiado.", "OK");
             ResetPanicState("Timeout en la conexión", Colors.Red);
@@ -253,14 +253,15 @@ public partial class DashboardPage : ContentPage
         Preferences.Default.Set("active_alert_id", -1);
         StatusLabel.Text = "📡 Creando alerta en el servidor...";
 
-        string userEmail = Preferences.Default.Get("UserEmail", "anonimo");
+        // 🌟 Leemos el correo configurado para el S.O.S.
+        string sosEmail = Preferences.Default.Get("SosEmail", "anonimo");
 
         var alertData = new
         {
             user_id = _currentUserId,
             latitude = lat,
             longitude = lon,
-            email = userEmail
+            sos_email = sosEmail
         };
         var json = JsonSerializer.Serialize(alertData);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -353,13 +354,11 @@ public partial class DashboardPage : ContentPage
                     {
                         if (contactsArray.GetArrayLength() > 0)
                         {
-                            // 1. Si el servidor dice que SÍ HAY contactos, actualizamos la memoria
                             string primerNumero = contactsArray[0].GetProperty("phone_number").GetString();
                             Preferences.Default.Set("offline_contact_phone", primerNumero);
                         }
                         else
                         {
-                            // 2. EL FIX : Si el servidor dice que la lista está VACÍA, borramos el fantasma de la memoria
                             Preferences.Default.Remove("offline_contact_phone");
                         }
                     }
@@ -371,19 +370,16 @@ public partial class DashboardPage : ContentPage
 
     private async void OnPanicButtonPressed(object sender, EventArgs e)
     {
-        // 1. BARRERA DE SEGURIDAD: Verificar si hay un contacto guardado
         string contactoEmergencia = Preferences.Default.Get("offline_contact_phone", "");
 
         if (string.IsNullOrEmpty(contactoEmergencia))
         {
-            // MOSTRAMOS EL OVERLAY PERSONALIZADO
             CustomAlertOverlay.IsVisible = true;
             CustomAlertOverlay.Opacity = 0;
             await CustomAlertOverlay.FadeTo(1, 250);
             return;
         }
 
-        // 2. ANIMACIÓN Y PROCESO NORMAL DEL S.O.S
         await PanicButton.ScaleTo(0.92, 100, Easing.CubicOut);
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -434,33 +430,22 @@ public partial class DashboardPage : ContentPage
         });
     }
 
-
     private void CargarSaludoPersonalizado()
     {
         string nombreCompleto = Preferences.Default.Get("UserFullName", "");
-
-        // Si no hay nombre guardado, le decimos "Valiente" por defecto
         string primerNombre = string.IsNullOrWhiteSpace(nombreCompleto) ? "Valiente" : nombreCompleto.Split(' ')[0];
-
         GreetingLabel.Text = $"Hola, {primerNombre} 💜";
     }
 
-    // ==========================================
-    // METODOS DEL OVERLAY DE ALERTA PERSONALIZADA
-    // ==========================================
     private async void OnGoToContactsClicked(object sender, EventArgs e)
     {
-        // Ocultar alerta suavemente
         await CustomAlertOverlay.FadeTo(0, 200);
         CustomAlertOverlay.IsVisible = false;
-
-        // Navegar a los contactos
         await Shell.Current.GoToAsync("//contacts");
     }
 
     private async void OnCancelAlertClicked(object sender, EventArgs e)
     {
-        // Solo ocultar la alerta
         await CustomAlertOverlay.FadeTo(0, 200);
         CustomAlertOverlay.IsVisible = false;
     }

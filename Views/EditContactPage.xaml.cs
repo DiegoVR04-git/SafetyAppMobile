@@ -22,17 +22,17 @@ public partial class EditContactPage : ContentPage
             AvatarInitials.Text = currentName.Substring(0, 1).ToUpper();
         }
 
-        // 2. Ingeniería inversa del teléfono (separar lada y número)
+        // 2. Ingeniería inversa del teléfono (separar lada y número hacia el Label estilizado)
         if (!string.IsNullOrEmpty(currentPhone))
         {
             if (currentPhone.StartsWith("+52"))
             {
-                CountryCodePicker.SelectedItem = "+52";
+                SelectedCountryCodeLabel.Text = "+52";
                 PhoneEntry.Text = currentPhone.Substring(3);
             }
             else if (currentPhone.StartsWith("+1"))
             {
-                CountryCodePicker.SelectedItem = "+1";
+                SelectedCountryCodeLabel.Text = "+1";
                 PhoneEntry.Text = currentPhone.Substring(2);
             }
             else
@@ -60,11 +60,47 @@ public partial class EditContactPage : ContentPage
         await Navigation.PopModalAsync();
     }
 
+    // ==========================================
+    // LÓGICA DEL SELECTOR DE PAÍS
+    // ==========================================
+    private async void OnOpenCountryCodeTapped(object sender, EventArgs e)
+    {
+        CountryCodeOverlay.IsVisible = true;
+        CountryCodeOverlay.Opacity = 0;
+        await CountryCodeOverlay.FadeTo(1, 200);
+    }
+
+    private async void OnCloseCountryCodeOverlay(object sender, EventArgs e)
+    {
+        await CountryCodeOverlay.FadeTo(0, 200);
+        CountryCodeOverlay.IsVisible = false;
+    }
+
+    private void OnCountrySelected(object sender, EventArgs e)
+    {
+        if (sender is Button btn)
+        {
+            if (btn.Text.Contains("+52"))
+            {
+                SelectedCountryCodeLabel.Text = "+52";
+            }
+            else if (btn.Text.Contains("+1"))
+            {
+                SelectedCountryCodeLabel.Text = "+1";
+            }
+        }
+
+        OnCloseCountryCodeOverlay(null, null);
+    }
+
+    // ==========================================
+    // GUARDAR ACTUALIZACIÓN
+    // ==========================================
     private async void OnSaveClicked(object sender, EventArgs e)
     {
         var name = NameEntry.Text?.Trim();
         var rawPhone = PhoneEntry.Text?.Trim();
-        string selectedCode = CountryCodePicker.SelectedItem?.ToString() ?? "+52";
+        string selectedCode = SelectedCountryCodeLabel.Text ?? "+52";
 
         // Validaciones
         if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(rawPhone))
