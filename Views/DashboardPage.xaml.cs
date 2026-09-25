@@ -16,6 +16,10 @@ public partial class DashboardPage : ContentPage
     private CancellationTokenSource _cancellationTokenSource;
     private const int HoldDurationMs = 2000;
     private int _currentAlertId;
+    private bool _isPulsing = false;
+
+    // Herramienta para pausar el código hasta que el usuario responda la alerta custom
+    private TaskCompletionSource<bool> _alertTcs;
 
     public DashboardPage()
     {
@@ -26,6 +30,7 @@ public partial class DashboardPage : ContentPage
 
     protected override void OnDisappearing()
     {
+        _isPulsing = false;
         App.EmergencyAlertActivated -= OnEmergencyAlertActivated;
         base.OnDisappearing();
     }
@@ -34,6 +39,12 @@ public partial class DashboardPage : ContentPage
     {
         base.OnAppearing();
         CargarSaludoPersonalizado();
+
+        if (!_isPulsing)
+        {
+            _isPulsing = true;
+            StartPulseLoop();
+        }
 
         try
         {
@@ -65,45 +76,91 @@ public partial class DashboardPage : ContentPage
             }
 
             if (activeAlertId != 0)
-            {
                 ActivarModoEmergenciaUI(activeAlertId);
-            }
             else
-            {
                 DesactivarModoEmergenciaUI();
-            }
 
-            try
-            {
-                await SincronizarContactoOffline();
-            }
-            catch (Exception syncEx)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DashboardPage] Error in SincronizarContactoOffline: {syncEx.Message}");
-            }
-
-            try
-            {
-                await SolicitarPermisosSeguridad();
-            }
-            catch (Exception permEx)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DashboardPage] Error in SolicitarPermisosSeguridad: {permEx.Message}");
-            }
-
-            try
-            {
-                await CentrarMapaInicial();
-            }
-            catch (Exception mapEx)
-            {
-                System.Diagnostics.Debug.WriteLine($"[DashboardPage] Error in CentrarMapaInicial: {mapEx.Message}");
-            }
+            try { await SincronizarContactoOffline(); } catch { }
+            try { await SolicitarPermisosSeguridad(); } catch { }
+            try { await CentrarMapaInicial(); } catch { }
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[DashboardPage] Critical error in OnAppearing: {ex.Message}\n{ex.StackTrace}");
+            System.Diagnostics.Debug.WriteLine($"[DashboardPage] Critical error in OnAppearing: {ex.Message}");
         }
+    }
+
+    // ========================================================
+    // MOTOR DE ALERTAS PERSONALIZADO (REEMPLAZA A DISPLAYALERT)
+    // ========================================================
+    private async Task<bool> ShowCustomAlert(string icon, string title, string message, string confirmText, string cancelText = null, bool isDestructive = false)
+    {
+        AlertIconLabel.Text = icon;
+        AlertTitleLabel.Text = title;
+        AlertMessageLabel.Text = message;
+
+        AlertConfirmBtn.Text = confirmText;
+        AlertConfirmBtn.BackgroundColor = isDestructive ? Color.FromArgb("#E5484D") : Color.FromArgb("#37246B"); // Rojo o Morado
+
+        if (!string.IsNullOrEmpty(cancelText))
+        {
+            AlertCancelBtn.Text = cancelText;
+            AlertCancelBtn.IsVisible = true;
+        }
+        else
+        {
+            AlertCancelBtn.IsVisible = false;
+        }
+
+        UniversalAlertOverlay.IsVisible = true;
+        await UniversalAlertOverlay.FadeTo(1, 200);
+
+        _alertTcs = new TaskCompletionSource<bool>();
+        return await _alertTcs.Task;
+    }
+
+    private async void OnAlertConfirmClicked(object sender, EventArgs e)
+    {
+        await UniversalAlertOverlay.FadeTo(0, 200);
+        UniversalAlertOverlay.IsVisible = false;
+        _alertTcs?.TrySetResult(true);
+    }
+
+    private async void OnAlertCancelClicked(object sender, EventArgs e)
+    {
+        await UniversalAlertOverlay.FadeTo(0, 200);
+        UniversalAlertOverlay.IsVisible = false;
+        _alertTcs?.TrySetResult(false);
+    }
+    // ========================================================
+
+    private async void StartPulseLoop()
+    {
+        while (_isPulsing)
+        {
+            _ = PulseRing(Ring1);
+            await Task.Delay(700);
+            _ = PulseRing(Ring2);
+            await Task.Delay(700);
+            _ = PulseRing(Ring3);
+            await Task.Delay(1400);
+        }
+    }
+
+    private async Task PulseRing(Microsoft.Maui.Controls.Shapes.Ellipse ring)
+    {
+        if (ring == null) return;
+        ring.Scale = 1.0;
+        ring.Opacity = 0.6;
+
+        var anim = new Animation(t =>
+        {
+            ring.Scale = 1.0 + t * 1.2;
+            ring.Opacity = 0.6 * (1 - t);
+        });
+
+        anim.Commit(ring, "pulse", length: 2800, easing: Easing.CubicOut);
+        await Task.Delay(2800);
     }
 
     private void OnEmergencyAlertActivated(int alertId)
@@ -156,23 +213,22 @@ public partial class DashboardPage : ContentPage
 
             if (activeAlertId == 0)
             {
-                await DisplayAlert("ℹ️ Información", "No hay alerta activa en este momento.", "OK");
+                await ShowCustomAlert("ℹ️", "Información", "No hay alerta activa en este momento.", "Entendido");
                 return;
             }
 
-            StatusLabel.Text = "📤 Desactivando alerta en el servidor...";
+            StatusLabel.Text = "📤 Desactivando alerta...";
             StatusLabel.TextColor = Colors.Orange;
 
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
-                await DisplayAlert("⚠️ Sin Conexión", "No hay conexión a internet.", "OK");
+                await ShowCustomAlert("⚠️", "Sin Conexión", "No hay conexión a internet para detener la alerta en la nube.", "Aceptar");
                 DesactivarModoEmergenciaUI();
                 return;
             }
 
             var url = $"{BaseUrl}/alerts/{activeAlertId}";
             var request = new HttpRequestMessage(HttpMethod.Put, url);
-
             var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
@@ -184,40 +240,26 @@ public partial class DashboardPage : ContentPage
                     var intent = new Android.Content.Intent(context, typeof(SafetyAppMobile.Platforms.Android.AndroidLocationService));
                     context.StopService(intent);
                 }
-                catch (Exception gpsEx)
-                {
-                    System.Diagnostics.Debug.WriteLine($"[SafetyButton] Error al detener GPS: {gpsEx.Message}");
-                }
+                catch { }
 #endif
                 DesactivarModoEmergenciaUI();
-                await DisplayAlert("✅ Éxito", "Alerta desactivada correctamente.", "OK");
+                await ShowCustomAlert("", "A Salvo", "Alerta SOS Suspendida", "Entendido");
                 ResetPanicState("Sistema Seguro - Alerta Finalizada", Color.FromArgb("#2E7D32"));
-
-                response?.Dispose();
-                request?.Dispose();
             }
             else
             {
-                await DisplayAlert("❌ Error", $"Código: {response.StatusCode}", "OK");
+                await ShowCustomAlert("❌", "Error", $"Hubo un problema. Código: {response.StatusCode}", "Aceptar", null, true);
                 ResetPanicState($"Error: {response.StatusCode}", Colors.Red);
-
-                response?.Dispose();
-                request?.Dispose();
             }
         }
         catch (HttpRequestException)
         {
-            await DisplayAlert("❌ Error de Red", "No se pudo conectar con el servidor.", "OK");
+            await ShowCustomAlert("❌", "Error de Red", "No se pudo conectar con el servidor.", "Aceptar", null, true);
             ResetPanicState("Error de conexión", Colors.Red);
-        }
-        catch (TaskCanceledException)
-        {
-            await DisplayAlert("⏱️ Timeout", "La petición tardó demasiado.", "OK");
-            ResetPanicState("Timeout en la conexión", Colors.Red);
         }
         catch (Exception ex)
         {
-            await DisplayAlert("❌ Error", $"Error: {ex.Message}", "OK");
+            await ShowCustomAlert("❌", "Error Inesperado", ex.Message, "Aceptar", null, true);
             ResetPanicState("Error inesperado", Colors.Red);
         }
     }
@@ -239,10 +281,7 @@ public partial class DashboardPage : ContentPage
                     UserMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(lat, lon), Distance.FromKilometers(0.5)));
             }
         }
-        catch (Exception geoEx)
-        {
-            System.Diagnostics.Debug.WriteLine($"[TriggerPanicAlert] Geolocation error: {geoEx.Message}");
-        }
+        catch { }
 
         if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
@@ -253,16 +292,9 @@ public partial class DashboardPage : ContentPage
         Preferences.Default.Set("active_alert_id", -1);
         StatusLabel.Text = "📡 Creando alerta en el servidor...";
 
-        // 🌟 Leemos el correo configurado para el S.O.S.
         string sosEmail = Preferences.Default.Get("SosEmail", "anonimo");
 
-        var alertData = new
-        {
-            user_id = _currentUserId,
-            latitude = lat,
-            longitude = lon,
-            sos_email = sosEmail
-        };
+        var alertData = new { user_id = _currentUserId, latitude = lat, longitude = lon, sos_email = sosEmail };
         var json = JsonSerializer.Serialize(alertData);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -315,15 +347,11 @@ public partial class DashboardPage : ContentPage
         try
         {
             if (UserMap == null) return;
-
             var loc = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium, TimeSpan.FromSeconds(3)));
             if (loc != null && UserMap != null)
                 UserMap.MoveToRegion(MapSpan.FromCenterAndRadius(new Location(loc.Latitude, loc.Longitude), Distance.FromKilometers(1)));
         }
-        catch (Exception ex)
-        {
-            System.Diagnostics.Debug.WriteLine($"[DashboardPage] Error in CentrarMapaInicial: {ex.Message}");
-        }
+        catch { }
     }
 
     private async Task SolicitarPermisosSeguridad()
@@ -350,17 +378,13 @@ public partial class DashboardPage : ContentPage
                     using var doc = JsonDocument.Parse(responseContent);
                     var root = doc.RootElement;
 
-                    if (root.TryGetProperty("contacts", out var contactsArray))
+                    if (root.TryGetProperty("contacts", out var contactsArray) && contactsArray.GetArrayLength() > 0)
                     {
-                        if (contactsArray.GetArrayLength() > 0)
-                        {
-                            string primerNumero = contactsArray[0].GetProperty("phone_number").GetString();
-                            Preferences.Default.Set("offline_contact_phone", primerNumero);
-                        }
-                        else
-                        {
-                            Preferences.Default.Remove("offline_contact_phone");
-                        }
+                        Preferences.Default.Set("offline_contact_phone", contactsArray[0].GetProperty("phone_number").GetString());
+                    }
+                    else
+                    {
+                        Preferences.Default.Remove("offline_contact_phone");
                     }
                 }
             }
@@ -411,7 +435,7 @@ public partial class DashboardPage : ContentPage
         string num = Preferences.Default.Get("offline_contact_phone", "");
         if (string.IsNullOrEmpty(num))
         {
-            await DisplayAlert("⚠️ Aviso", "No hay red y no tienes contacto de respaldo.", "OK");
+            await ShowCustomAlert("⚠️", "Aviso Crítico", "No hay red y no tienes contacto de respaldo guardado.", "Aceptar", null, true);
             return;
         }
         var sms = new SmsMessage($"🚨 EMERGENCIA: Mi ubicación: http://maps.google.com/?q={lat},{lon}", new[] { num });
@@ -434,7 +458,7 @@ public partial class DashboardPage : ContentPage
     {
         string nombreCompleto = Preferences.Default.Get("UserFullName", "");
         string primerNombre = string.IsNullOrWhiteSpace(nombreCompleto) ? "Valiente" : nombreCompleto.Split(' ')[0];
-        GreetingLabel.Text = $"Hola, {primerNombre} 💜";
+        GreetingLabel.Text = $"Hola, {primerNombre}";
     }
 
     private async void OnGoToContactsClicked(object sender, EventArgs e)
@@ -448,5 +472,35 @@ public partial class DashboardPage : ContentPage
     {
         await CustomAlertOverlay.FadeTo(0, 200);
         CustomAlertOverlay.IsVisible = false;
+    }
+
+    // ========================================================
+    // LÓGICA DEL BOTÓN 911 (USANDO LA ALERTA CUSTOM)
+    // ========================================================
+    private async void OnCall911Clicked(object sender, EventArgs e)
+    {
+        await Call911Button.ScaleTo(0.95, 100, Easing.CubicOut);
+        await Call911Button.ScaleTo(1.0, 100, Easing.BounceOut);
+
+        bool confirmar = await ShowCustomAlert("🚨", "Emergencia 911", "¿Estás a punto de contactar al 911. ¿Deseas continuar?", "Sí, Llamar", "Cancelar", true);
+
+        if (confirmar)
+        {
+            try
+            {
+                if (PhoneDialer.Default.IsSupported)
+                {
+                    PhoneDialer.Default.Open("911");
+                }
+                else
+                {
+                    await ShowCustomAlert("❌", "No Soportado", "Tu dispositivo no soporta llamadas telefónicas nativas.", "Aceptar", null, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                await ShowCustomAlert("❌", "Error", $"No se pudo realizar la llamada: {ex.Message}", "Aceptar", null, true);
+            }
+        }
     }
 }

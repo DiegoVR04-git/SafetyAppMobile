@@ -8,150 +8,126 @@
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
              BackgroundColor="#5F42CA">
-    <!-- 🟣 Fondo morado general idéntico al resto de la app -->
 
     <Grid>
-        <!-- CONTENIDO PRINCIPAL DIVIDIDO EN 2 FILAS -->
         <Grid RowDefinitions="Auto,*">
 
-            <!-- ── 1. CABECERA MORADA CON SALUDO Y ESTADO ──────────────── -->
-            <VerticalStackLayout Grid.Row="0"
-                                 Padding="25,40,25,25"
-                                 Spacing="15"
-                                 HorizontalOptions="Center">
-
-                <!-- MENSAJE DE BIENVENIDA -->
+            <!-- Header with greeting and system status -->
+            <VerticalStackLayout Grid.Row="0" Padding="25,40,25,25" Spacing="15" HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
-                    <Label x:Name="GreetingLabel" Text="Hola, Melissa 💜" FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+                    <Label x:Name="GreetingLabel" Text="Hola, " FontSize="28" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
                     <Label Text="Tu red de apoyo está cuidando tus pasos." FontSize="13" TextColor="#E2D9F3" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- INDICADOR DE ESTADO EN PÍLDORA -->
                 <Border Stroke="Transparent" StrokeThickness="0" StrokeShape="RoundRectangle 20" BackgroundColor="#FFFFFF" Padding="18,10" HorizontalOptions="Center">
                     <Border.Shadow>
                         <Shadow Brush="Black" Offset="0,4" Radius="10" Opacity="0.1" />
                     </Border.Shadow>
-
                     <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                        <skia:SKLottieView x:Name="StatusLottie"
-                                           Source="shield.json"
-                                           RepeatCount="-1"
-                                           HeightRequest="24"
-                                           WidthRequest="24"
-                                           VerticalOptions="Center" />
-
+                        <skia:SKLottieView x:Name="StatusLottie" Source="shield.json" RepeatCount="-1" HeightRequest="24" WidthRequest="24" VerticalOptions="Center" />
                         <Label x:Name="StatusLabel" Text="Sistema Listo y Seguro" FontSize="13" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="#2E7D32" VerticalOptions="Center" />
                     </HorizontalStackLayout>
                 </Border>
             </VerticalStackLayout>
 
-            <!-- ── 2. TARJETA BLANCA FLOTANTE CON EL S.O.S. Y EL MAPA ───── -->
-            <Border Grid.Row="1"
-                    BackgroundColor="{StaticResource PulsoFondo}"
-                    Stroke="Transparent"
-                    StrokeShape="RoundRectangle 30,30,0,0"
-                    Padding="0">
-
+            <!-- Main content card -->
+            <Border Grid.Row="1" BackgroundColor="{StaticResource PulsoFondo}" Stroke="Transparent" StrokeShape="RoundRectangle 30,30,0,0" Padding="0">
                 <ScrollView>
-                    <Grid Padding="20,25,20,40" RowDefinitions="Auto, Auto, *" RowSpacing="20">
+                    <Grid Padding="20,25,20,40" RowDefinitions="Auto, Auto, Auto, *" RowSpacing="20">
 
-                        <!-- EL PROTAGONISTA: BOTÓN S.O.S -->
+                        <!-- S.O.S Emergency Button -->
                         <Grid Grid.Row="0" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="340" HeightRequest="340">
+                            <!-- Sonar pulse rings -->
+                                <Ellipse x:Name="Ring1" WidthRequest="190" HeightRequest="190" Stroke="#7FFF5252" StrokeThickness="2" Opacity="0" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Ellipse x:Name="Ring2" WidthRequest="190" HeightRequest="190" Stroke="#55FFB3B3" StrokeThickness="2" Opacity="0" HorizontalOptions="Center" VerticalOptions="Center" />
+                            <Ellipse x:Name="Ring3" WidthRequest="190" HeightRequest="190" Stroke="#33FFE0E0" StrokeThickness="1.5" Opacity="0" HorizontalOptions="Center" VerticalOptions="Center" />
 
-                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 160" BackgroundColor="#FFFFFF" WidthRequest="320" HeightRequest="320" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Border.Shadow>
-                                    <Shadow Brush="Black" Offset="0,10" Radius="20" Opacity="0.05" />
-                                </Border.Shadow>
-                            </Border>
-                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 130" BackgroundColor="#FAFAFA" WidthRequest="260" HeightRequest="260" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Border.Shadow>
-                                    <Shadow Brush="Black" Offset="0,5" Radius="15" Opacity="0.08" />
-                                </Border.Shadow>
-                            </Border>
+                            <Ellipse WidthRequest="260" HeightRequest="260" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                                        <GradientStop Color="#33FF5252" Offset="0.0" />
+                                        <GradientStop Color="#00FF5252" Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
 
-                            <Border StrokeThickness="0" StrokeShape="RoundRectangle 105" BackgroundColor="Transparent" WidthRequest="210" HeightRequest="210" HorizontalOptions="Center" VerticalOptions="Center">
-                                <Border.Shadow>
-                                    <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,0" Radius="40" Opacity="0.3" />
-                                </Border.Shadow>
-                            </Border>
-
-                            <Button x:Name="PanicButton" 
-                                    Text="S.O.S" 
-                                    FontSize="42" 
-                                    Padding="0"
-                                    FontFamily="PoppinsBold"
-                                    FontAttributes="Bold" 
-                                    TextColor="White" 
-                                    CornerRadius="100" 
-                                    WidthRequest="200" 
-                                    HeightRequest="200" 
-                                    HorizontalOptions="Center" 
-                                    VerticalOptions="Center"
-                                    Pressed="OnPanicButtonPressed" 
-                                    Released="OnPanicButtonReleased">
+                            <Button x:Name="PanicButton" Text="S.O.S" FontSize="48" FontFamily="PoppinsBold" FontAttributes="Bold" TextColor="White" CornerRadius="100" WidthRequest="200" HeightRequest="200" HorizontalOptions="Center" VerticalOptions="Center" Pressed="OnPanicButtonPressed" Released="OnPanicButtonReleased" BorderWidth="1.5" BorderColor="#40FFA0A0">
                                 <Button.Background>
-                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                        <GradientStop Color="#FF5252" Offset="0.0" />
-                                        <GradientStop Color="{StaticResource PulsoAlertaRoja}" Offset="1.0" />
-                                    </LinearGradientBrush>
+                                    <RadialGradientBrush Center="0.48,0.28" Radius="0.75">
+                                        <GradientStop Color="#FF7070" Offset="0.0" />
+                                        <GradientStop Color="#FF5252" Offset="0.30" />
+                                        <GradientStop Color="#D32F2F" Offset="0.65" />
+                                        <GradientStop Color="#8B0000" Offset="1.0" />
+                                    </RadialGradientBrush>
                                 </Button.Background>
                                 <Button.Shadow>
-                                    <Shadow Brush="{StaticResource PulsoAlertaRoja}" Offset="0,8" Radius="20" Opacity="0.4" />
+                                    <Shadow Brush="#FF3030" Offset="0,15" Radius="30" Opacity="0.5" />
                                 </Button.Shadow>
                             </Button>
 
-                            <ProgressBar x:Name="HoldProgressBar" 
-                                         Progress="0" 
-                                         ProgressColor="{StaticResource PulsoAlertaRoja}" 
-                                         BackgroundColor="#E0E0E0" 
-                                         HeightRequest="6" 
-                                         WidthRequest="130" 
-                                         HorizontalOptions="Center" 
-                                         VerticalOptions="End" 
-                                         Margin="0,0,0,25"
-                                         Opacity="0" />
+                            <Ellipse WidthRequest="100" HeightRequest="45" HorizontalOptions="Center" VerticalOptions="Start" Margin="0,75,0,0">
+                                <Ellipse.Fill>
+                                    <RadialGradientBrush Center="0.5,0.5" Radius="0.5">
+                                        <GradientStop Color="#52FFFFFF" Offset="0.0" />
+                                        <GradientStop Color="#14FFFFFF" Offset="0.6" />
+                                        <GradientStop Color="#00FFFFFF" Offset="1.0" />
+                                    </RadialGradientBrush>
+                                </Ellipse.Fill>
+                            </Ellipse>
+
+                            <ProgressBar x:Name="HoldProgressBar" Progress="0" ProgressColor="{StaticResource PulsoAlertaRoja}" BackgroundColor="#E0E0E0" HeightRequest="6" WidthRequest="130" HorizontalOptions="Center" VerticalOptions="End" Margin="0,0,0,25" Opacity="0" />
                         </Grid>
-                        <!-- BOTÓN DE 'ESTOY A SALVO' MEJORADO -->
-                        <Button x:Name="SafetyButton" 
-        Grid.Row="1"
-        Text="ESTOY A SALVO" 
-        Clicked="OnSafetyButtonClicked" 
-        TextColor="White" 
-        IsVisible="False" 
-        HeightRequest="60" 
-        CornerRadius="30" 
-        WidthRequest="260" 
-        HorizontalOptions="Center" 
-        VerticalOptions="Center" 
-        FontFamily="PoppinsBold"
-        FontAttributes="Bold" 
-        FontSize="15"
-        CharacterSpacing="1"
-        BorderWidth="0">
+
+                        <!-- Safety/All Clear Button -->
+                        <Button x:Name="SafetyButton" Grid.Row="1" Text="✅ ESTOY A SALVO" Clicked="OnSafetyButtonClicked" TextColor="White" IsVisible="False" HeightRequest="60" CornerRadius="30" WidthRequest="260" HorizontalOptions="Center" VerticalOptions="Center" FontFamily="PoppinsBold" FontAttributes="Bold" FontSize="15" CharacterSpacing="1" BorderWidth="0">
                             <Button.Background>
-                                <!-- Gradiente Esmeralda Moderno -->
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                                     <GradientStop Color="#10B981" Offset="0.0" />
                                     <GradientStop Color="#047857" Offset="1.0" />
                                 </LinearGradientBrush>
                             </Button.Background>
                             <Button.Shadow>
-                                <!-- Sombra más suave y elegante -->
                                 <Shadow Brush="#047857" Offset="0,8" Radius="15" Opacity="0.35" />
                             </Button.Shadow>
                         </Button>
 
-                        <!-- MAPA TIPO WIDGET IOS -->
-                        <Border Grid.Row="2" StrokeThickness="0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 25" HeightRequest="220" Margin="0,5,0,0">
+                        <!-- Emergency 911 Call Button -->
+                        <Button x:Name="Call911Button" 
+                                Grid.Row="2"
+                                Text="LLAMAR AL 911" 
+                                Clicked="OnCall911Clicked" 
+                                TextColor="White" 
+                                HeightRequest="55" 
+                                CornerRadius="27" 
+                                WidthRequest="260" 
+                                HorizontalOptions="Center" 
+                                VerticalOptions="Center" 
+                                FontFamily="PoppinsBold"
+                                FontAttributes="Bold" 
+                                FontSize="15"
+                                CharacterSpacing="2"
+                                BorderWidth="1.5"
+                                BorderColor="{StaticResource PulsoMoradoMedio}">
+                            <Button.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#8B7FD9" Offset="0.0" />
+                                    <GradientStop Color="{StaticResource PulsoMoradoProfundo}" Offset="1.0" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                            <Button.Shadow>
+                                <Shadow Brush="{StaticResource PulsoMoradoProfundo}" Offset="0,6" Radius="12" Opacity="0.4" />
+                            </Button.Shadow>
+                        </Button>
+
+                        <!-- Map Widget -->
+                        <Border Grid.Row="3" StrokeThickness="0" BackgroundColor="#FFFFFF" StrokeShape="RoundRectangle 25" HeightRequest="220" Margin="0,5,0,0">
                             <Border.Shadow>
                                 <Shadow Brush="Black" Offset="0,8" Radius="20" Opacity="0.1" />
                             </Border.Shadow>
-
                             <Grid>
                                 <ContentView IsClippedToBounds="True">
                                     <maps:Map x:Name="UserMap" IsShowingUser="True" MapType="Street" Margin="0" />
                                 </ContentView>
-
                                 <Border HorizontalOptions="Start" VerticalOptions="Start" Margin="15,15,0,0" BackgroundColor="#E6FFFFFF" StrokeThickness="0" StrokeShape="RoundRectangle 12" Padding="10,6">
                                     <HorizontalStackLayout Spacing="6">
                                         <Label Text="📍" FontSize="12" VerticalOptions="Center" />
@@ -165,51 +141,32 @@
             </Border>
         </Grid>
 
-        <!-- ── 💜 OVERLAY DE ALERTA PERSONALIZADA ───────────────────────── -->
-        <Grid x:Name="CustomAlertOverlay" 
-              BackgroundColor="#99000000" 
-              IsVisible="False" 
-              ZIndex="100">
-
-            <Border BackgroundColor="White"
-                    Stroke="#37246B"
-                    StrokeThickness="1"
-                    StrokeShape="RoundRectangle 25"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"
-                    WidthRequest="320"
-                    Padding="25">
-
+        <!-- Contact Alert Overlay -->
+        <Grid x:Name="CustomAlertOverlay" BackgroundColor="#99000000" IsVisible="False" ZIndex="100">
+            <Border BackgroundColor="White" Stroke="#37246B" StrokeThickness="1" StrokeShape="RoundRectangle 25" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="320" Padding="25">
                 <VerticalStackLayout Spacing="15">
-                    <!-- Icono y Título -->
                     <Label Text="⚠️" FontSize="40" HorizontalOptions="Center" />
-                    <Label Text="Acción Requerida" 
-                           TextColor="#37246B" 
-                           FontFamily="PoppinsBold" 
-                           FontSize="20" 
-                           HorizontalOptions="Center" />
-
-                    <!-- Mensaje -->
-                    <Label Text="Para usar el botón S.O.S. necesitas registrar al menos un contacto de emergencia que reciba tus alertas." 
-                           TextColor="#7663B5" 
-                           FontFamily="PoppinsRegular"
-                           FontSize="14" 
-                           HorizontalTextAlignment="Center" />
-
-                    <!-- Botones -->
+                    <Label Text="Acción Requerida" TextColor="#37246B" FontFamily="PoppinsBold" FontSize="20" HorizontalOptions="Center" />
+                    <Label Text="Para usar el botón S.O.S. necesitas registrar al menos un contacto de emergencia que reciba tus alertas." TextColor="#7663B5" FontFamily="PoppinsRegular" FontSize="14" HorizontalTextAlignment="Center" />
                     <VerticalStackLayout Spacing="10" Margin="0,15,0,0">
-                        <Button Text="Añadir Contacto" 
-                                BackgroundColor="#37246B" 
-                                TextColor="White" 
-                                CornerRadius="12"
-                                FontFamily="PoppinsBold"
-                                Clicked="OnGoToContactsClicked" />
+                        <Button Text="Añadir Contacto" BackgroundColor="#37246B" TextColor="White" CornerRadius="12" FontFamily="PoppinsBold" Clicked="OnGoToContactsClicked" />
+                        <Button Text="Cancelar" BackgroundColor="Transparent" TextColor="#7663B5" FontFamily="PoppinsRegular" Clicked="OnCancelAlertClicked" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
 
-                        <Button Text="Cancelar" 
-                                BackgroundColor="Transparent" 
-                                TextColor="#7663B5"
-                                FontFamily="PoppinsRegular"
-                                Clicked="OnCancelAlertClicked" />
+                <!-- Universal Alert Overlay -->
+        <Grid x:Name="UniversalAlertOverlay" BackgroundColor="#99000000" IsVisible="False" ZIndex="200" Opacity="0">
+            <Border BackgroundColor="White" Stroke="#37246B" StrokeThickness="1" StrokeShape="RoundRectangle 25" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="320" Padding="25">
+                <VerticalStackLayout Spacing="15">
+                    <Label x:Name="AlertIconLabel" Text="⚠️" FontSize="40" HorizontalOptions="Center" />
+                    <Label x:Name="AlertTitleLabel" Text="Título" TextColor="#37246B" FontFamily="PoppinsBold" FontSize="20" HorizontalOptions="Center" HorizontalTextAlignment="Center" />
+                    <Label x:Name="AlertMessageLabel" Text="Mensaje" TextColor="#7663B5" FontFamily="PoppinsRegular" FontSize="14" HorizontalTextAlignment="Center" />
+
+                    <VerticalStackLayout Spacing="10" Margin="0,15,0,0">
+                        <Button x:Name="AlertConfirmBtn" Text="Aceptar" BackgroundColor="#37246B" TextColor="White" CornerRadius="12" HeightRequest="50" FontFamily="PoppinsBold" Clicked="OnAlertConfirmClicked" />
+                        <Button x:Name="AlertCancelBtn" Text="Cancelar" BackgroundColor="Transparent" TextColor="#7663B5" HeightRequest="50" FontFamily="PoppinsRegular" Clicked="OnAlertCancelClicked" IsVisible="False" />
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
