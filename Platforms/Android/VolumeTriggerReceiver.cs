@@ -98,6 +98,7 @@ public class VolumeTriggerReceiver : BroadcastReceiver
                     var responseContent = await response.Content.ReadAsStringAsync();
                     using var doc = JsonDocument.Parse(responseContent);
                     int alertId = doc.RootElement.GetProperty("alert").GetProperty("alert_id").GetInt32();
+                    WhatsAppResults.Save(userId, alertId, doc.RootElement);
 
                     // 📝 Actualizamos con el ID real recibido de la base de datos
                     Microsoft.Maui.Storage.Preferences.Default.Set("active_alert_id", alertId);

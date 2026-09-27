@@ -181,6 +181,7 @@ public partial class DashboardPage : ContentPage
             StatusLabel.Text = "🚨 RASTREO EN PROCESO";
             StatusLabel.TextColor = Colors.Red;
             HoldProgressBar.Opacity = 0;
+            ShowWhatsAppResults(alertId);
 
             if (StatusLottie != null)
                 StatusLottie.Source = new SKFileLottieImageSource { File = "alert.json" };
@@ -197,6 +198,8 @@ public partial class DashboardPage : ContentPage
             PanicButton.IsEnabled = true;
             PanicButton.Opacity = 1.0;
             SafetyButton.IsVisible = false;
+            WhatsAppResultsCard.IsVisible = false;
+            WhatsAppContactRows.Children.Clear();
             StatusLabel.Text = "Sistema Listo y Seguro";
             StatusLabel.TextColor = Color.FromArgb("#2E7D32");
 
@@ -223,7 +226,7 @@ public partial class DashboardPage : ContentPage
             if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
             {
                 await ShowCustomAlert("⚠️", "Sin Conexión", "No hay conexión a internet para detener la alerta en la nube.", "Aceptar");
-                DesactivarModoEmergenciaUI();
+                ResetPanicState("Alerta activa · Cierre sin confirmar", Colors.Orange);
                 return;
             }
 
@@ -243,6 +246,7 @@ public partial class DashboardPage : ContentPage
                 catch { }
 #endif
                 DesactivarModoEmergenciaUI();
+                WhatsAppResults.Clear(_currentUserId);
                 await ShowCustomAlert("", "A Salvo", "Alerta SOS Suspendida", "Entendido");
                 ResetPanicState("Sistema Seguro - Alerta Finalizada", Color.FromArgb("#2E7D32"));
             }
@@ -285,7 +289,8 @@ public partial class DashboardPage : ContentPage
 
         if (Connectivity.Current.NetworkAccess != NetworkAccess.Internet)
         {
-            await DispararAlertaOffline(lat, lon);
+            ResetPanicState("Sin internet · Alerta no enviada", Colors.Orange);
+            await ShowCustomAlert("⚠️", "Sin conexión", "Necesitas internet para enviar tu alerta por WhatsApp. Conéctate e inténtalo de nuevo.", "Entendido");
             return;
         }
 
@@ -307,11 +312,11 @@ public partial class DashboardPage : ContentPage
                 using var doc = JsonDocument.Parse(responseContent);
                 int alertId = doc.RootElement.GetProperty("alert").GetProperty("alert_id").GetInt32();
 
+                WhatsAppResults.Save(_currentUserId, alertId, doc.RootElement);
                 ActivarModoEmergenciaUI(alertId);
-                await Task.Delay(2000);
                 StartTracking(alertId, lat, lon);
 
-                ResetPanicState("¡S.O.S ENVIADO Y RASTREO ACTIVO!", Colors.Red);
+                ResetPanicState("Alerta activa · Consulta tus avisos", Colors.Red);
             }
             else
             {
@@ -321,8 +326,53 @@ public partial class DashboardPage : ContentPage
         }
         catch
         {
+            if (_currentAlertId > 0)
+            {
+                ResetPanicState("Alerta activa · Revisa el rastreo", Colors.Orange);
+                await ShowCustomAlert("⚠️", "Alerta registrada", "La alerta se creó, pero hubo un problema al iniciar el rastreo. Los resultados de WhatsApp aparecen en la tarjeta de avisos.", "Entendido");
+                return;
+            }
             DesactivarModoEmergenciaUI();
-            await DispararAlertaOffline(lat, lon);
+            ResetPanicState("Envío sin confirmar", Colors.Orange);
+            await ShowCustomAlert("⚠️", "Envío sin confirmar", "No pudimos confirmar el resultado de la alerta. Es posible que el servidor haya recibido la solicitud.", "Entendido");
+        }
+    }
+
+    private void ShowWhatsAppResults(int alertId)
+    {
+        WhatsAppResultsCard.IsVisible = true;
+        WhatsAppContactRows.Children.Clear();
+        var results = WhatsAppResults.Load(_currentUserId, alertId);
+        if (results == null)
+        {
+            WhatsAppSummaryLabel.Text = "Alerta registrada. No hay resultados de envío disponibles.";
+            return;
+        }
+        if (results.Count == 0)
+        {
+            WhatsAppSummaryLabel.Text = "No se enviaron avisos: no hay contactos registrados.";
+            return;
+        }
+
+        int accepted = results.Count(result => result.Status == "accepted");
+        WhatsAppSummaryLabel.Text = $"WhatsApp aceptó {accepted} de {results.Count} solicitudes.";
+        foreach (var result in results)
+        {
+            var row = new VerticalStackLayout { Spacing = 2 };
+            row.Children.Add(new Label
+            {
+                Text = string.IsNullOrWhiteSpace(result.Name) ? "Contacto" : result.Name,
+                FontFamily = "PoppinsBold",
+                FontSize = 14,
+                TextColor = Color.FromArgb("#37246B")
+            });
+            row.Children.Add(new Label
+            {
+                Text = result.StatusText,
+                FontSize = 13,
+                TextColor = Color.FromArgb(result.StatusColor)
+            });
+            WhatsAppContactRows.Children.Add(row);
         }
     }
 
@@ -428,19 +478,6 @@ public partial class DashboardPage : ContentPage
     {
         await PanicButton.ScaleTo(1.0, 100, Easing.BounceOut);
         _cancellationTokenSource?.Cancel();
-    }
-
-    private async Task DispararAlertaOffline(double lat, double lon)
-    {
-        string num = Preferences.Default.Get("offline_contact_phone", "");
-        if (string.IsNullOrEmpty(num))
-        {
-            await ShowCustomAlert("⚠️", "Aviso Crítico", "No hay red y no tienes contacto de respaldo guardado.", "Aceptar", null, true);
-            return;
-        }
-        var sms = new SmsMessage($"🚨 EMERGENCIA: Mi ubicación: http://maps.google.com/?q={lat},{lon}", new[] { num });
-        await Sms.Default.ComposeAsync(sms);
-        ResetPanicState("SMS de emergencia preparado", Colors.Orange);
     }
 
     private void ResetPanicState(string message, Color color)
